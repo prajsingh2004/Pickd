@@ -1,0 +1,3495 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PICKD</title>
+    <link rel="icon" type="image/png" href="plogo.webp">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-red: #FF3131;
+
+            /* Dark Mode Defaults (Fallback) */
+            --bg-main: #050505;
+            --bg-secondary: #0a0a0a;
+            --text-main: #f0f0f0;
+            --text-muted: #9ca3af;
+            /* gray-400 */
+            --border-color: #1f2937;
+            /* gray-800 */
+            --nav-bg: rgba(5, 5, 5, 0.95);
+            --cursor-color: #ffffff;
+            --card-hover-border: rgba(255, 255, 255, 0.1);
+            --scrollbar-track: rgba(8, 0, 255, 0.05);
+        }
+
+        /* Light Mode Overrides (Active by default via HTML attribute) */
+        [data-theme="light"] {
+            --bg-main: #ffffff;
+            --bg-secondary: #ffffff;
+            --text-main: #050505;
+            --text-muted: #4b5563;
+            /* gray-600 */
+            --border-color: #a3a3a3;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            /* FIX: Set cursor to white for difference blend mode to create contrast (White - Light Bg = Dark Cursor) */
+            --cursor-color: #ffffff;
+            --card-hover-border: rgba(0, 0, 0, 0.1);
+            --scrollbar-track: rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Theme Utility Classes */
+        .bg-theme-main {
+            background-color: var(--bg-main);
+            transition: background-color 0.5s ease;
+        }
+
+        .bg-theme-secondary {
+            background-color: var(--bg-secondary);
+            transition: background-color 0.5s ease;
+        }
+
+        .text-theme-main {
+            color: var(--text-main);
+            transition: color 0.5s ease;
+        }
+
+        .text-theme-muted {
+            color: var(--text-muted);
+            transition: color 0.5s ease;
+        }
+
+        .border-theme {
+            border-color: var(--border-color);
+            transition: border-color 0.5s ease;
+        }
+
+        .bg-nav {
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            transition: background-color 0.5s ease;
+            box-shadow: 0 2px 3px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        h1,
+        h2,
+        h3,
+        .display-font {
+            font-family: 'Syne', sans-serif;
+        }
+
+        .font-cardo {
+            font-family: 'Cardo', serif;
+        }
+
+        /* Hide Default Scrollbar for Custom Implementation on Slider */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Custom Cursor */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--cursor-color);
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--cursor-color);
+            transition: width 0.2s, height 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body:hover .cursor-outline.hovered {
+            width: 40px;
+            height: 40px;
+            background-color: var(--neon-red);
+            border-color: var(--neon-red);
+            mix-blend-mode: normal;
+            opacity: 0.9;
+        }
+
+        /* Noise Overlay for Texture */
+        /* .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9000;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        } */
+
+        .noise-overlay {
+            display: none;
+            /* This completely removes the texture */
+        }
+
+        /* Text Selection */
+        ::selection {
+            background: var(--neon-red);
+            color: white;
+        }
+
+        /* Utility animations */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Image Reveal Hover */
+        .service-item .service-img {
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            position: fixed;
+            z-index: 50;
+            transform: scale(0.8);
+            will-change: transform, opacity;
+        }
+
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--neon-red);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        /* Navigation Links & Active State */
+        .nav-link {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background-color: var(--neon-red);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Mobile menu overlay */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        /* Scramble Text Monospace Font Fallback */
+        .scramble-effect {
+            font-family: 'Syne', sans-serif;
+        }
+
+        .stat-card:hover .stat-number {
+            color: var(--neon-red);
+            transform: scale(1.1);
+        }
+
+        /* Page Transitions */
+        .view-section {
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .hidden-view {
+            display: none;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Work Grid Specifics - Replaces List */
+        .work-grid-container {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .work-grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .work-grid-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .work-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            transition: opacity 0.5s ease;
+        }
+
+        .work-card.span-2 {
+            grid-column: span 1;
+        }
+
+        @media (min-width: 768px) {
+            .work-card.span-2 {
+                grid-column: span 2;
+            }
+        }
+
+        .work-card img {
+            height: 115%;
+            /* Extra height for Parallax */
+            width: 100%;
+            object-fit: cover;
+            position: relative;
+            top: -7.5%;
+            /* Center the extra height */
+            transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1), filter 0.5s ease;
+            filter: grayscale(100%);
+            will-change: transform;
+        }
+
+        .work-card:hover img {
+            transform: scale(1.05);
+            /* Parallax handles Y, this handles Scale */
+            filter: grayscale(0%);
+        }
+
+        .work-card .overlay {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .work-card:hover .overlay {
+            opacity: 1;
+        }
+
+        /* Floating Work Preview */
+        #work-floating-preview {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 40;
+            width: 30vw;
+            height: 20vw;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+            border: 1px solid var(--neon-red);
+            background-color: var(--bg-secondary);
+            overflow: hidden;
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            #work-floating-preview {
+                display: block;
+            }
+        }
+
+        /* Collective Grid Item */
+        .collective-card {
+            border: 1px solid var(--card-hover-border);
+            /* Removed transition here to avoid conflict with GSAP */
+        }
+
+        .collective-card:hover {
+            border-color: var(--neon-red);
+            /* background handled by inner elements */
+        }
+
+        /* Contact Form Styles */
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            background: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            font-size: 1.25rem;
+            color: var(--text-main);
+            transition: border-color 0.3s ease, color 0.3s ease;
+            outline: none;
+            border-radius: 0;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            border-bottom-color: var(--neon-red);
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Work Filters */
+        .work-filter-btn {
+            position: relative;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            border-radius: 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .work-filter-btn.active {
+            border-color: var(--neon-red);
+            color: var(--neon-red);
+        }
+
+        .work-filter-btn:hover {
+            color: var(--neon-red);
+        }
+
+        /* Slide Indicator Animation */
+        @keyframes slideLoop {
+            0% {
+                left: 0%;
+            }
+
+            50% {
+                left: 66%;
+            }
+
+            100% {
+                left: 0%;
+            }
+        }
+
+        .animate-slide-loop {
+            animation: slideLoop 2s infinite ease-in-out;
+        }
+
+        /* Prevent image drag ghosting for custom slider */
+        #work-slider img {
+            user-drag: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
+            /* Allow events to pass to container for drag */
+        }
+
+        /* Specific Red Scrollbar for Filters */
+        .filter-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-red) transparent;
+        }
+
+        .filter-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            /* Visible thickness */
+        }
+
+        .filter-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .filter-scrollbar::-webkit-scrollbar-thumb {
+            background-color: var(--neon-red) !important;
+            border-radius: 3px;
+        }
+
+        .filter-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #ff1a1a !important;
+        }
+
+        /* --- GAME STYLES START --- */
+        #playground {
+            user-select: none;
+            touch-action: none;
+            position: relative;
+            /* Matches user prompt background */
+            background-color: #E0DCDC;
+        }
+
+        #playground canvas {
+            display: block;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #000;
+            font-size: 20px;
+            pointer-events: none;
+            text-shadow: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .interactive {
+            pointer-events: auto !important;
+        }
+
+        input[type=range] {
+            accent-color: #ff0033;
+            cursor: pointer;
+        }
+
+        #goal-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #000;
+            font-size: 20px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 10;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #win-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .neon-text {
+            color: #ff0033;
+            font-size: 40px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 40px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #continue-btn {
+            padding: 15px 40px;
+            font-size: 24px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            background-color: #ff0033;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 15px #ff0033;
+            transition: all 0.3s;
+        }
+
+        #continue-btn:hover {
+            transform: scale(1.1);
+            background-color: #ff3355;
+            box-shadow: 0 0 25px #ff0033;
+        }
+
+        /* --- GAME STYLES END --- */
+
+        #form-btn {
+            width: 260px;
+            /* 🔒 FIXED WIDTH */
+            height: 56px;
+            /* 🔒 FIXED HEIGHT */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        #form-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Loader */
+        .btn-loader {
+            width: 12px;
+            height: 12px;
+            background: #ff3131;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Loading Screen -->
+    <!-- <div class="loader" id="loader">
+        <h1 class="text-6xl md:text-9xl font-extrabold text-white display-font">PICKD</h1>
+    </div> -->
+
+    <!-- Noise Texture -->
+    <div class="noise-overlay"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
+
+    <!-- Navigation -->
+    <nav
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 pt-6 pb-3 md:px-12 text-theme-main bg-nav">
+        <a href="#" onclick="navigateTo('home'); return false;"
+            class="text-2xl font-bold tracking-[0.12em] hoverable font-cardo transition-colors duration-300 hover:text-[#FF3131]"
+            data-cursor="logo">PICKD</a>
+
+        <div class="hidden md:flex items-center gap-10 font-medium text-sm uppercase tracking-widest">
+            <a id="nav-work" onclick="navigateTo('work'); return false;" class="nav-link hoverable">Work</a>
+            <a id="nav-services" onclick="navigateTo('services'); return false;" class="nav-link hoverable">Services</a>
+            <a id="nav-about" onclick="navigateTo('about'); return false;" class="nav-link hoverable">About</a>
+            <a id="nav-playground" onclick="navigateTo('home', 'playground'); return false;"
+                class="nav-link hoverable">Playground</a>
+            <a id="nav-contact" onclick="navigateTo('contact'); return false;"
+                class="nav-link hoverable text-[#FF3131]">Let's Talk</a>
+
+            <!-- Theme Toggle -->
+            <button onclick="toggleTheme()"
+                class="hoverable ml-4 border border-theme px-3 py-1 rounded-full text-xs hover:border-[#FF3131] hover:text-[#FF3131] transition-colors"
+                id="themeBtn">
+                Mode: Light
+            </button>
+        </div>
+
+        <button class="md:hidden text-2xl hoverable" id="menuBtn">☰</button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed inset-0 bg-theme-main z-40 flex flex-col justify-center items-center gap-8 text-4xl display-font font-bold"
+        id="mobileMenu">
+        <button class="absolute top-6 right-6 text-theme-main text-4xl hoverable" id="closeMenuBtn">×</button>
+        <a onclick="navigateTo('work'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Work</a>
+        <a onclick="navigateTo('services'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Services</a>
+        <a onclick="navigateTo('about'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">About</a>
+        <a onclick="navigateTo('home', 'playground'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Playground</a>
+        <a onclick="navigateTo('contact'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Contact</a>
+        <button onclick="toggleTheme(); toggleMenu();"
+            class="text-lg mt-8 text-theme-muted uppercase tracking-widest hover:text-[#FF3131]">Switch Theme</button>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <div id="main-container">
+
+        <!-- VIEW: HOME -->
+        <div id="view-home" class="view-section">
+            <!-- Hero Section -->
+            <section class="h-screen w-full flex flex-col justify-center items-center relative overflow-hidden px-4">
+                <div class="absolute inset-0 opacity-20 pointer-events-none">
+                    <div
+                        class="absolute top-1/4 left-1/4 w-64 h-64 bg-[#FF3131] rounded-full blur-[100px] animate-pulse">
+                    </div>
+                    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-900 rounded-full blur-[120px]"></div>
+                </div>
+
+                <div class="z-10 text-center mix-blend-normal">
+                    <p
+                        class="text-[#FF3131] uppercase tracking-[0.3em] text-sm md:text-base mb-4 font-bold animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                        Beyond the Obvious</p>
+                    <h1 class="display-font text-[15vw] leading-[0.8] font-extrabold tracking-tighter hoverable"
+                        data-cursor="big">
+                        WE ARE <br>
+                        <span class="text-theme-main hover:text-[#FF3131] transition-colors duration-500">PICKD</span>
+                    </h1>
+                </div>
+
+                <div
+                    class="absolute bottom-10 left-6 md:left-12 flex items-center gap-4 text-xs md:text-sm uppercase tracking-widest text-theme-muted">
+                    <div class="w-2 h-2 bg-[#FF3131] rounded-full animate-ping"></div>
+                    <span>Scroll to see it unfold</span>
+                </div>
+            </section>
+
+            <!-- Marquee / Statement -->
+            <section class="py-8 bg-[#FF3131] text-black border-y border-black overflow-hidden">
+                <div class="marquee-container">
+                    <div class="marquee-content display-font text-6xl md:text-8xl font-black uppercase">
+                        &nbsp;Congratulations You've been pickd! Congratulations You've been pickd!
+                        &nbsp;Congratulations You've been picked! Congratulations You've been pickd!
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: WORK PREVIEW (Selected Chaos) -->
+            <section id="work-preview" class="py-32 px-6 md:px-12 relative border-b border-theme">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+                    <div>
+                        <h2 class="text-5xl md:text-7xl font-bold display-font"><span
+                                class="text-[#FF3131]">Featured</span> Work</h2>
+                        <p class="text-[#FF3131] uppercase tracking-widest mt-4 text-sm">[ Selected Works 2024-2025 ]
+                        </p>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <p class="max-w-md text-theme-muted mt-6 md:mt-0 text-lg text-right mb-4">
+                            Every project we take on is shaped by intent — never templates.
+                        </p>
+                        <!-- Updated border color to neon red -->
+                        <button onclick="navigateTo('work');"
+                            class="text-theme-main border border-[#FF3131] px-6 py-2 rounded-none uppercase text-xs tracking-widest hover:bg-[#FF3131] hover:border-[#FF3131] transition-all hoverable">View
+                            Full Archive</button>
+                    </div>
+                </div>
+
+                <!-- Horizontal Draggable/Scrollable Area -->
+                <div class="flex overflow-x-auto gap-8 pb-4 snap-x snap-mandatory cursor-grab active:cursor-grabbing hide-scrollbar"
+                    id="work-slider">
+
+                    <!-- Project 1: SAB Marine -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="sab 2.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="SAB Marine">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">SAB MARINE</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Identity /
+                                Dining</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 2: Daily Daisy -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="Daily Daisy 12.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Daily Daisy">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">DAILY DAISY</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Skincare
+                                Branding</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 3: Smart Medic -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="smart 0.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Smart Medic">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">SMART MEDIC</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Healthcare
+                                UI/UX</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 4: UpandUp.life -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="upandup 4.png"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="UpandUp">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">UPANDUP.LIFE</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Workforce
+                                Intelligence</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 5: Learnix -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1000&auto=format&fit=crop"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Learnix">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">LEARNIX</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">EdTech
+                                Platform</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 6: Smart Chair -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="chair thumbnail.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Smart Chair">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">SMART CHAIR</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Product
+                                Tech</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 7: Nivia -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="nivia 0.2.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Nivia">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">NIVIA</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Sports
+                                Marketing</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 8: The Canteen -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="cant 13.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="The Canteen">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">THE CANTEEN</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Branding /
+                                Space</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 9: Anjani Gram -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="AGP 7.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Anjani Gram">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">ANJANI GRAM PRAYAGRAJ
+                                MAHAKUMBH 2025</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">
+                                BRAND/STRATEGY/SALES</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 10: Swarovski -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="swar thumbnail.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Swarovski">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">SWAROVSKI X THE WEEKND
+                            </h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">GRAPHICS
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Custom Slider Controls -->
+                <div class="w-full max-w-4xl h-4 bg-gray-200 dark:bg-gray-800 mt-12 rounded-full relative overflow-hidden hoverable cursor-pointer"
+                    id="custom-slider-track">
+                    <div class="absolute top-0 left-0 h-full w-1/4 bg-[#FF3131] cursor-grab active:cursor-grabbing hoverable"
+                        id="custom-slider-thumb"></div>
+                </div>
+            </section>
+
+            <!-- SECTION: ABOUT PREVIEW (Manifesto) -->
+            <section id="about-preview" class="py-32 px-6 md:px-12 relative border-b border-theme bg-theme-main">
+                <div class="max-w-7xl mx-auto z-10 relative">
+                    <p class="text-sm font-bold mb-8 text-[#FF3131] uppercase tracking-wider reveal-text">Where It All
+                        Began</p>
+                    <h5
+                        class="text-4xl md:text-8xl leading-[1.0] font-bold display-font mb-16 text-theme-main mix-blend-exclusion">
+                        <span class="scramble-text inline-block" data-value="We don’t chase trends."></span><br>
+                        <span class="scramble-text text-[#FF3131] inline-block" data-value="We build foundations.">We
+                            build foundations.</span>
+                    </h5>
+                    <div class="grid md:grid-cols-2 gap-16 text-lg md:text-xl leading-relaxed font-medium">
+                        <p class="reveal-paragraph opacity-0 translate-y-4 text-theme-main">Most brands don’t fail
+                            because they lack talent or ambition.
+                            They fail because their story is never truly understood. <br><br> We began as a small
+                            collective of designers, strategists, and thinkers who believed that great brands are built
+                            at the intersection of clarity, intention, and emotion.
+
+                        </p>
+                        <p class="reveal-paragraph opacity-0 translate-y-4 text-theme-main">
+                            What started as conversations and late-night explorations slowly became a way of working —
+                            one rooted in listening first, designing second, and building with purpose.<br><br>
+
+                            Today, PICKD exists to help brands grow with meaning, not noise.
+                            To create identities that feel considered, confident, and unmistakably their own.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: ENTER PLAYGROUND (Inserted Here) -->
+            <div class="bg-theme-secondary pt-24 pb-16 px-6 md:px-12 border-t border-theme text-center">
+                <p class="text-[#FF3131] uppercase tracking-widest text-xs mb-2 animate-pulse">System Ready</p>
+                <h2 class="text-4xl md:text-6xl font-bold display-font text-theme-main leading-[0.85] uppercase">
+                    ENTER THE <span class="text-[#FF3131]">PLAYGROUND</span>
+                </h2>
+            </div>
+
+            <!-- Game Container -->
+            <section id="playground" class="relative w-full h-[85vh] overflow-hidden hoverable border-b border-theme"
+                data-cursor="big">
+                <div id="ui-layer" style="top: 20px;">
+                    <div>Score: <span id="scoreEl">0</span></div>
+                    <div class="interactive">
+                        Speed: <span id="speedVal">1.0</span>x
+                        <br>
+                        <input type="range" id="speedSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+                    </div>
+                </div>
+                <div id="goal-display" style="top: 20px;">Score 2500 to get PICKD</div>
+
+                <!-- Win Screen Container -->
+                <div id="win-screen">
+                    <div class="neon-text">Congratulations<br>you have been PICKD</div>
+                    <button id="continue-btn" class="hoverable">Continue Game</button>
+                </div>
+
+                <canvas id="gameCanvas" class="block w-full h-full"></canvas>
+            </section>
+
+            <!-- SHARED CONTACT FOR HOME -->
+            <section id="contact-home"
+                class="min-h-[50vh] flex flex-col justify-center px-6 md:px-12 relative pt-20 bg-theme-main border-t border-theme">
+                <div class="w-full max-w-5xl mx-auto pb-20">
+                    <h2 class="text-[12vw] leading-none font-bold display-font text-center md:text-left text-theme-main hover:text-[#FF3131] transition-colors duration-500 cursor-pointer"
+                        onclick="navigateTo('contact')">
+                        LET'S TALK
+                    </h2>
+                    <div class="mt-20 grid md:grid-cols-2 gap-16">
+                        <div class="flex flex-col justify-between text-theme-muted">
+                            <div>
+                                <p class="text-theme-main text-xl mb-4">Contact Info</p>
+                                <p class="mb-2">
+                                    <a href="/cdn-cgi/l/email-protection#2b42454d446b5b4248404f054245" class="hover:text-[#FF3131] transition-colors"><span class="__cf_email__" data-cfemail="2940474f466959404a424d074047">[email&#160;protected]</span></a>
+                                </p>
+                                <p>
+                                    <a href="tel:+918871491373" class="hover:text-[#FF3131] transition-colors">+91
+                                        8871491373</a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-between text-theme-muted">
+                            <div>
+                                <p class="text-theme-main text-xl mb-4">Socials</p>
+                                <div class="flex flex-col gap-2">
+                                    <a href="https://www.instagram.com/pickd.in/" target="_blank"
+                                        class="hover:text-[#FF3131] hoverable">Instagram</a>
+                                    <a href="https://x.com/itspickd?s=11"
+                                        class="hover:text-[#FF3131] hoverable">Twitter</a>
+                                    <a href="https://www.linkedin.com/company/pickd-india/" target="_blank"
+                                        class="hover:text-[#FF3131] hoverable">LinkedIn</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="py-6 border-t border-theme flex justify-between text-xs text-theme-muted uppercase tracking-widest">
+                    <span>© 2024 PICKD. Agency</span>
+                    <span>Designed in the Void</span>
+                </div>
+            </section>
+        </div>
+        <!-- END VIEW: HOME -->
+
+        <!-- VIEW: WORK (DEDICATED PAGE - GRID REDESIGN) -->
+        <div id="view-work" class="view-section hidden-view min-h-screen bg-theme-main">
+            <!-- Work Hero & Introduction -->
+            <section class="pt-40 pb-8 px-6 md:px-12">
+                <div class="flex flex-col items-start text-left">
+                    <h1 class="display-font text-[14vw] leading-[0.8] font-bold text-theme-main uppercase mb-8">
+                        Archive
+                    </h1>
+                    <p class="max-w-5xl text-theme-muted text-lg md:text-xl leading-relaxed">
+                        A curated collection of brands and ideas shaped with intention.
+                        Each project reflects a balance of strategy, creativity, and care.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Sticky Filter Bar Container -->
+            <div class="sticky top-[70px] z-30 bg-theme-main w-full border-b border-transparent">
+                <!-- Added ID, specific class for red scrollbar, and drag cursors -->
+                <div id="filter-scroll-container"
+                    class="w-full overflow-x-auto px-6 md:px-12 pb-4 pt-2 filter-scrollbar cursor-grab active:cursor-grabbing">
+                    <div class="inline-flex gap-4 md:gap-8 text-xs md:text-sm uppercase tracking-widest font-medium 
+                                md:border md:border-theme md:px-6 md:py-3 md:bg-theme-secondary 
+                                min-w-full md:min-w-0" id="work-filters">
+                        <button class="work-filter-btn active hover:text-[#FF3131] transition-colors text-theme-main"
+                            data-filter="all">All Projects</button>
+                        <button class="work-filter-btn hover:text-[#FF3131] transition-colors text-theme-main"
+                            data-filter="branding">Branding & Design</button>
+                        <button class="work-filter-btn hover:text-[#FF3131] transition-colors text-theme-main"
+                            data-filter="marketing">Marketing & Advertising</button>
+                        <button class="work-filter-btn hover:text-[#FF3131] transition-colors text-theme-main"
+                            data-filter="copywriting">Copywriting & Content Strategy</button>
+                        <button class="work-filter-btn hover:text-[#FF3131] transition-colors text-theme-main"
+                            data-filter="tech">Automation & Technology</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Creative Grid Layout -->
+            <section class="px-6 md:px-12 pb-32">
+                <div class="work-grid-container" id="work-grid">
+
+                    <!-- Item 1 (Wide Span): SAB Marine -->
+                    <div class="work-card span-2 group hoverable" data-category="branding marketing" data-cursor="view"
+                        onclick="openProjectModal(this)">
+                        <div class="relative overflow-hidden aspect-[16/9]">
+                            <img src="sab 3.webp" class="w-full h-full object-cover">
+                            <div class="overlay absolute inset-0 flex flex-col justify-end p-8">
+                                <h3 class="project-title text-3xl font-bold display-font text-white">SAB MARINE</h3>
+                                <p class="project-category text-[#FF3131] text-xs uppercase tracking-widest mt-2">
+                                    Identity / Dining</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 (Standard): Daily Daisy -->
+                    <div class="work-card group hoverable" data-category="branding marketing" data-cursor="view"
+                        onclick="openProjectModal(this)">
+                        <div class="relative overflow-hidden aspect-[4/5]">
+                            <img src="Daily Daisy 8.webp" class="w-full h-full object-cover">
+                            <div class="overlay absolute inset-0 flex flex-col justify-end p-8">
+                                <h3 class="project-title text-2xl font-bold display-font text-white">DAILY DAISY</h3>
+                                <p class="project-category text-[#FF3131] text-xs uppercase tracking-widest mt-2">
+                                    Skincare/Branding</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 (Standard): Smart Medic -->
+                    <div class="work-card group hoverable" data-category="branding marketing" data-cursor="view"
+                        onclick="openProjectModal(this)">
+                        <div class="relative overflow-hidden aspect-[4/5]">
+                            <img src="smart 0.webp" class="w-full h-full object-cover">
+                            <div class="overlay absolute inset-0 flex flex-col justify-end p-8">
+                                <h3 class="project-title text-2xl font-bold display-font text-white">SMART MEDIC</h3>
+                                <p class="project-category text-[#FF3131] text-xs uppercase tracking-widest mt-2">
+                                    Healthcare UI/UX</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 (Wide Span): UpandUp.life -->
+                    <div class="work-card span-2 group hoverable" data-category="tech copywriting marketing"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <div class="relative overflow-hidden aspect-[16/9]">
+                            <img src="upandup 1.webp" class="w-full h-full object-cover">
+                            <div class="overlay absolute inset-0 flex flex-col justify-end p-8">
+                                <h3 class="project-title text-3xl font-bold display-font text-white">UPANDUP.LIFE</h3>
+                                <p class="project-category text-[#FF3131] text-xs uppercase tracking-widest mt-2">
+                                    Workforce Intelligence</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 5 (Standard): Learnix -->
+                    <div class="work-card group hoverable" data-category="tech" data-cursor="view"
+                        onclick="openProjectModal(this)">
+                        <div class="relative overflow-hidden aspect-square">
+                            <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1000&auto=format&fit=crop"
+                                class="w-full h-full object-cover">
+                            <div class="overlay absolute inset-0 flex flex-col justify-end p-8">
+                                <h3 class="project-title text-2xl font-bold display-font text-white">LEARNIX</h3>
+                                <p class="project-category text-[#FF3131] text-xs uppercase tracking-widest mt-2">
+                                    Education Tech</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 6 (Standard): Smart Chair -->
+                    <div class="work-card group hoverable" data-category="tech branding" data-cursor="view"
+                        onclick="openProjectModal(this)">
+                        <div class="relative overflow-hidden aspect-square">
+                            <img src="chair thumbnail.webp" class="w-full h-full object-cover">
+                            <div class="overlay absolute inset-0 flex flex-col justify-end p-8">
+                                <h3 class="project-title text-2xl font-bold display-font text-white">SMART CHAIR</h3>
+                                <p class="project-category text-[#FF3131] text-xs uppercase tracking-widest mt-2">
+                                    Product Tech</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 7 (Standard): Nivia -->
+                    <div class="work-card group hoverable" data-category="marketing " data-cursor="view"
+                        onclick="openProjectModal(this)">
+                        <div class="relative overflow-hidden aspect-square">
+                            <img src="nivia 0.2.webp" class="w-full h-full object-cover">
+                            <div class="overlay absolute inset-0 flex flex-col justify-end p-8">
+                                <h3 class="project-title text-2xl font-bold display-font text-white">NIVIA</h3>
+                                <p class="project-category text-[#FF3131] text-xs uppercase tracking-widest mt-2">Sports
+                                    Marketing</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 8 (Wide Span): The Canteen -->
+                    <div class="work-card span-2 group hoverable" data-category="branding" data-cursor="view"
+                        onclick="openProjectModal(this)">
+                        <div class="relative overflow-hidden aspect-[16/9]">
+                            <img src="cant 13.webp" class="w-full h-full object-cover">
+                            <div class="overlay absolute inset-0 flex flex-col justify-end p-8">
+                                <h3 class="project-title text-3xl font-bold display-font text-white">THE CANTEEN</h3>
+                                <p class="project-category text-[#FF3131] text-xs uppercase tracking-widest mt-2">
+                                    Branding / Space</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 9: Anjani Gram -->
+                    <div class="work-card group hoverable" data-category="content marketing branding" data-cursor="view"
+                        onclick="openProjectModal(this)">
+                        <div class="relative overflow-hidden aspect-square">
+                            <img src="AGP 7.webp" class="w-full h-full object-cover">
+                            <div class="overlay absolute inset-0 flex flex-col justify-end p-8">
+                                <h3 class="project-title text-2xl font-bold display-font text-white">ANJANI GRAM
+                                    PRAYAGRAJ MAHAKUMBH</h3>
+                                <p class="project-category text-[#FF3131] text-xs uppercase tracking-widest mt-2">Visual
+                                    Storytelling</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 10: Swarovski -->
+                    <div class="work-card group hoverable" data-category="marketing" data-cursor="view"
+                        onclick="openProjectModal(this)">
+                        <div class="relative overflow-hidden aspect-square">
+                            <img src="swar thumbnail.webp" class="w-full h-full object-cover">
+                            <div class="overlay absolute inset-0 flex flex-col justify-end p-8">
+                                <h3 class="project-title text-2xl font-bold display-font text-white">SWAROVSKI</h3>
+                                <p class="project-category text-[#FF3131] text-xs uppercase tracking-widest mt-2">
+                                    Campaign Strategy</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Work Footer -->
+            <div class="py-6 px-6 md:px-12 border-t border-theme bg-theme-main">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-center text-xs text-theme-muted uppercase tracking-widest">
+                    <span>© 2024 PICKD. Agency</span>
+                    <div class="flex gap-6 mt-4 md:mt-0">
+                        <a href="https://www.instagram.com/pickd.in/" target="_blank"
+                            class="hover:text-[#FF3131]">Instagram</a>
+                        <a href="#" class="hover:text-[#FF3131]">Twitter</a>
+                        <a href="/cdn-cgi/l/email-protection#7910171f163909101a121d571017" class="hover:text-[#FF3131]">Email</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END VIEW: WORK -->
+
+        <!-- VIEW: SERVICES -->
+        <div id="view-services" class="view-section hidden-view min-h-screen bg-theme-main">
+            <!-- Services Hero -->
+            <section class="pt-40 pb-20 px-6 md:px-12 border-b border-theme">
+                <h1 class="display-font text-[12vw] leading-[0.85] font-bold text-theme-main uppercase">
+                    Services
+                </h1>
+                <div class="flex flex-col md:flex-row justify-left-end mt-12">
+                    <p class="text-[#FF3131] uppercase tracking-widest"></p>
+                    <p class="max-w-5xl text-theme-muted text-lg md:text-xl leading-relaxed">
+                        Branding. Strategy. Technology. Designed to work together — not in silos.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Detailed Services List -->
+            <section class="px-6 md:px-12 py-20">
+                <!-- Item 1 -->
+                <div class="service-row border-b border-theme py-16 group hoverable cursor-pointer"
+                    onclick="navigateTo('work', 'branding')">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <h2
+                            class="text-4xl md:text-6xl font-bold display-font text-theme-main group-hover:text-[#FF3131] transition-colors duration-300">
+                            BRANDING & DESIGN</h2>
+                        <span class="text-theme-muted text-sm uppercase tracking-widest mt-4 md:mt-0">01</span>
+                    </div>
+                    <div
+                        class="mt-8 md:pl-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-theme-muted text-sm uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
+                        <p>UI/UX and Brand Identitiy System</p>
+                        <p>Visual language & design direction</p>
+                        <p>Packaging and experience design</p>
+                    </div>
+                </div>
+                <!-- Item 2 -->
+                <div class="service-row border-b border-theme py-16 group hoverable cursor-pointer"
+                    onclick="navigateTo('work', 'marketing')">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <h2
+                            class="text-4xl md:text-6xl font-bold display-font text-theme-main group-hover:text-[#FF3131] transition-colors duration-300">
+                            MARKETING & ADVERTISING</h2>
+                        <span class="text-theme-muted text-sm uppercase tracking-widest mt-4 md:mt-0">02</span>
+                    </div>
+                    <div
+                        class="mt-8 md:pl-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-theme-muted text-sm uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
+                        <p>Strategic campaign planning</p>
+                        <p>Digital and Social Marketing</p>
+                        <p>Performance-driven storytelling</p>
+                    </div>
+                </div>
+                <!-- Item 3 -->
+                <div class="service-row border-b border-theme py-16 group hoverable cursor-pointer"
+                    onclick="navigateTo('work', 'copywriting')">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <h2
+                            class="text-4xl md:text-6xl font-bold display-font text-theme-main group-hover:text-[#FF3131] transition-colors duration-300">
+                            COPYWRITING & CONTENT</h2>
+                        <span class="text-theme-muted text-sm uppercase tracking-widest mt-4 md:mt-0">03</span>
+                    </div>
+                    <div
+                        class="mt-8 md:pl-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-theme-muted text-sm uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
+                        <p>Brand storytelling</p>
+                        <p>Website and campaign copy</p>
+                        <p>Advertisement Screen Writing</p>
+                    </div>
+                </div>
+                <!-- Item 4 -->
+                <div class="service-row border-b border-theme py-16 group hoverable cursor-pointer"
+                    onclick="navigateTo('work', 'tech')">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <h2
+                            class="text-4xl md:text-6xl font-bold display-font text-theme-main group-hover:text-[#FF3131] transition-colors duration-300">
+                            AUTOMATION & TECHNOLOGY</h2>
+                        <span class="text-theme-muted text-sm uppercase tracking-widest mt-4 md:mt-0">04</span>
+                    </div>
+                    <div
+                        class="mt-8 md:pl-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-theme-muted text-sm uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
+                        <p>Websites and digital platforms</p>
+                        <p>Smart workflows and automation</p>
+                        <p>Operational Strategy Integrations</p>
+                    </div>fP
+                </div>
+            </section>
+
+            <!-- Services Footer -->
+            <div class="py-6 px-6 md:px-12 border-t border-theme bg-theme-main">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-center text-xs text-theme-muted uppercase tracking-widest">
+                    <span>© 2024 PICKD. Agency</span>
+                    <div class="flex gap-6 mt-4 md:mt-0">
+                        <a href="https://www.instagram.com/pickd.in/" target="_blank"
+                            class="hover:text-[#FF3131]">Instagram</a>
+                        <a href="#" class="hover:text-[#FF3131]">Twitter</a>
+                        <a href="/cdn-cgi/l/email-protection#97fef9f1f8d7e7fef4fcf3b9fef9b7f4fbf6e4e4aa" hover:text-[#FF3131]">Email</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END VIEW: SERVICES -->
+
+        <!-- VIEW: ABOUT -->
+        <div id="view-about" class="view-section hidden-view min-h-screen bg-theme-main">
+            <!-- Background Blob -->
+            <div
+                class="absolute top-0 right-0 w-[60vw] h-[60vw] bg-[#FF3131] rounded-full blur-[200px] opacity-20 pointer-events-none mix-blend-multiply">
+            </div>
+
+            <!-- About Hero / Manifesto -->
+            <section class="pt-40 pb-12 px-6 md:px-12 max-w-7xl mx-auto z-10 relative">
+                <p class="text-sm font-bold mb-8 text-[#FF3131] uppercase tracking-wider">Where it all began</p>
+                <h3
+                    class="text-4xl md:text-8xl leading-[1.0] font-bold display-font mb-16 text-theme-main mix-blend-exclusion">
+                    <span class="scramble-text inline-block" data-value="Quiet Confidence.">Quiet
+                        Confidence..</span><br>
+                    <span class="scramble-text text-[#FF3131] inline-block" data-value="Clear Intent.">Clear
+                        Intent.</span>
+                </h3>
+                <div class="grid md:grid-cols-2 gap-16 text-lg md:text-xl leading-relaxed font-medium">
+                    <p class="reveal-paragraph opacity-0 translate-y-4 text-theme-main">
+                        In a world competing for attention, we believe in slowing down —
+                        listening carefully, thinking deeply, and designing with intention.
+
+                    </p>
+                    <p class="reveal-paragraph opacity-0 translate-y-4 text-theme-main">
+                        Our work is not about being loud.
+                        It’s about being remembered. Our approach blends creativity, clarity, and long-term thinking —
+                        allowing brands to grow with confidence.
+                    </p>
+                </div>
+            </section>
+
+            <!-- NEW SECTION: The Thought Behind PICKD (Replaces Protocol) -->
+            <section class="py-20 px-6 md:px-12 border-t border-theme">
+                <div class="max-w-7xl mx-auto">
+                    <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+                        <h2 class="text-4xl md:text-6xl font-bold display-font text-theme-main">The Thought Behind <span
+                                class="text-[#FF3131]">PICKD</span></h2>
+                    </div>
+
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-12 text-lg md:text-xl leading-relaxed text-theme-muted">
+                        <div>
+                            <p class="mb-8 text-theme-main font-medium">
+                                PICKD was born from a simple realization: most brands don’t fail because they lack
+                                talent or ambition.
+                                <span class="text-[#FF3131]">They fail because their story is never truly
+                                    understood.</span>
+                            </p>
+                            <p>
+                                We began as a small collective of designers, strategists, and thinkers who believed that
+                                great brands are built at the intersection of clarity, intention, and emotion.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="mb-8">
+                                What started as conversations and late-night explorations slowly became a way of working
+                                — one rooted in listening first, designing second, and building with purpose.
+                            </p>
+                            <p class="text-theme-main font-medium">
+                                Today, PICKD exists to help brands grow with meaning, not noise. To create identities
+                                that feel considered, confident, and unmistakably their own.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- The Collective (Team) -->
+            <section class="py-20 px-6 md:px-12 bg-theme-secondary text-theme-main">
+                <div class="max-w-7xl mx-auto">
+                    <h2 class="text-4xl md:text-6xl font-bold display-font mb-6">THE COLLECTIVE</h2>
+                    <p class="text-theme-muted max-w-2xl text-lg mb-16">Built by people who care about the
+                        details.<br>Shaped through collaboration.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Profile 1: Founder -->
+                        <div class="collective-card group relative h-96 overflow-hidden cursor-pointer border border-theme"
+                            data-cursor="big">
+                            <img src="prof_women.webp"
+                                class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90">
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-8">
+                                <h4 class="text-3xl font-bold display-font text-white mb-1">JAANSI RAJ</h4>
+                                <p class="text-[#FF3131] text-xs uppercase tracking-widest mb-2">Role: Founder & CEO</p>
+                                <p
+                                    class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                    Orchestrating the chaos. Defining the vision.</p>
+                            </div>
+                        </div>
+
+                        <!-- Profile 2: Co-Founder -->
+                        <div class="collective-card group relative h-96 overflow-hidden cursor-pointer border border-theme"
+                            data-cursor="big">
+                            <img src="prof_men.webp"
+                                class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90">
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-8">
+                                <h4 class="text-3xl font-bold display-font text-white mb-1">PRIYESH MISHRA</h4>
+                                <p class="text-[#FF3131] text-xs uppercase tracking-widest mb-2">Role: Founder &
+                                    Creative Head</p>
+                                <p
+                                    class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                    Building the structure. Breaking boundaries.</p>
+                            </div>
+                        </div>
+
+                        <!-- Profile 3: Design Manager -->
+                        <div class="collective-card group relative h-96 overflow-hidden cursor-pointer border border-theme"
+                            data-cursor="big">
+                            <img src="prof_men.webp" w-full h-full object-cover filter grayscale group-hover:grayscale-0
+                                transition-all duration-500 scale-100 group-hover:scale-105">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90">
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-8">
+                                <h4 class="text-3xl font-bold display-font text-white mb-1">PRAJ SINGH</h4>
+                                <p class="text-[#FF3131] text-xs uppercase tracking-widest mb-2">Role: Design Lead</p>
+                                <p
+                                    class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                    Curating the aesthetics, keeping functionality first.</p>
+                            </div>
+
+                        </div>
+
+                        <!-- Profile 4: Employee -->
+                        <!-- <div class="collective-card group relative h-96 overflow-hidden cursor-pointer border border-theme" data-cursor="big">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                            <div class="absolute bottom-0 left-0 w-full p-8">
+                                <h4 class="text-3xl font-bold display-font text-white mb-1">THE OPERATIVE</h4>
+                                <p class="text-[#FF3131] text-xs uppercase tracking-widest mb-2">Role: Senior Developer</p>
+                                <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">In the machine. Executing the code.</p>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- NEW SECTION: FUTURE SCOPE -->
+            <section class="py-20 px-6 md:px-12 bg-theme-main text-theme-main border-t border-theme">
+                <div class="max-w-7xl mx-auto">
+                    <div class="flex flex-col md:flex-row justify-between items-start mb-16">
+                        <div>
+                            <p class="text-[#FF3131] uppercase tracking-widest text-sm mb-4">Our Capabilities</p>
+                            <h2 class="text-4xl md:text-7xl font-bold display-font leading-none">Everything Works
+                                Better<br>When It Works Together</h2>
+                        </div>
+                        <p class="max-w-md text-lg font-medium mt-8 md:mt-0">
+                            We bring strategy, creativity, and technology into one seamless ecosystem — so brands don’t
+                            just look good, they grow with purpose.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
+                        <div class="group cursor-default hoverable">
+                            <h3
+                                class="text-2xl font-bold display-font mb-4 group-hover:text-[#FF3131] transition-colors">
+                                SYSTEM-FIRST CREATIVITY</h3>
+                            <p class="text-theme-muted text-sm leading-relaxed mb-4">
+                                We build flexible brand systems where design, content, and campaigns grow and improve
+                                over time without losing what makes the brand unique.
+                            </p>
+                            <div class="h-[1px] w-full bg-theme-secondary group-hover:bg-[#FF3131] transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="group cursor-default hoverable">
+                            <h3
+                                class="text-2xl font-bold display-font mb-4 group-hover:text-[#FF3131] transition-colors">
+                                AUTOMATION AS A CREATIVE FORCE</h3>
+                            <p class="text-theme-muted text-sm leading-relaxed mb-4">
+                                From trigger-based storytelling to self-running marketing workflows, we’re turning
+                                repetitive effort into autonomous growth loops.
+                            </p>
+                            <div class="h-[1px] w-full bg-theme-secondary group-hover:bg-[#FF3131] transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="group cursor-default hoverable">
+                            <h3
+                                class="text-2xl font-bold display-font mb-4 group-hover:text-[#FF3131] transition-colors">
+                                PLATFORM-AGNOSTIC BRANDS</h3>
+                            <p class="text-theme-muted text-sm leading-relaxed mb-4">
+                                We’re designing identities and content ecosystems that survive algorithm shifts, channel
+                                fatigue, and format decay built to exist anywhere.
+                            </p>
+                            <div class="h-[1px] w-full bg-theme-secondary group-hover:bg-[#FF3131] transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="group cursor-default hoverable">
+                            <h3
+                                class="text-2xl font-bold display-font mb-4 group-hover:text-[#FF3131] transition-colors">
+                                SYNTHETIC SPEED</h3>
+                            <p class="text-theme-muted text-sm leading-relaxed mb-4">
+                                We’re exploring rapid-production pipelines where ideas move from concept to execution at
+                                system speed without sacrificing quality or intent.
+                            </p>
+                            <div class="h-[1px] w-full bg-theme-secondary group-hover:bg-[#FF3131] transition-colors">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Footer -->
+            <div class="py-6 px-6 md:px-12 border-t border-theme bg-theme-main">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-center text-xs text-theme-muted uppercase tracking-widest">
+                    <span>© 2024 PICKD. Agency</span>
+                    <div class="flex gap-6 mt-4 md:mt-0">
+                        <a href="https://www.instagram.com/pickd.in/" target="_blank"
+                            class="hover:text-[#FF3131]">Instagram</a>
+                        <a href="#" class="hover:text-[#FF3131]">Twitter</a>
+                        <a href="/cdn-cgi/l/email-protection#8fe6e1e9e0cfffe6ece4eba1e6e1" class="hover:text-[#FF3131]">Email</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END VIEW: ABOUT -->
+
+        <!-- VIEW: CONTACT (DEDICATED PAGE) -->
+        <div id="view-contact" class="view-section hidden-view min-h-screen bg-theme-main text-theme-main">
+            <!-- Reverting to the simpler "LET'S TALK" centered layout -->
+            <section class="min-h-screen flex flex-col justify-center px-6 md:px-12 pt-32 pb-20">
+                <div class="w-full max-w-5xl mx-auto">
+                    <h1
+                        class="text-[12vw] leading-none font-bold display-font text-center md:text-left text-theme-main mb-20">
+                        LET'S TALK
+                    </h1>
+
+                    <div class="grid md:grid-cols-2 gap-16 md:gap-24">
+                        <!-- Form -->
+                        <!-- <form class="space-y-12" id="contact-form">
+                            <div class="relative group">
+                                <input type="text" id="c-name" placeholder="Your Name" required class="w-full bg-transparent border-b border-theme py-4 text-xl focus:outline-none focus:border-[#FF3131] transition-colors hoverable text-theme-main placeholder-theme-muted">
+                            </div>
+                            <div class="relative group">
+                                <input type="email" id="c-email" placeholder="Your Email" required class="w-full bg-transparent border-b border-theme py-4 text-xl focus:outline-none focus:border-[#FF3131] transition-colors hoverable text-theme-main placeholder-theme-muted">
+                            </div>
+                            <div class="relative group">
+                                <textarea id="c-message" placeholder="Tell us about the project" rows="1" required class="w-full bg-transparent border-b border-theme py-4 text-xl focus:outline-none focus:border-[#FF3131] transition-colors resize-none hoverable text-theme-main placeholder-theme-muted"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="px-8 py-4 bg-[#FF3131] text-white font-bold text-lg uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-300 hoverable">
+                                Submit Inquiry
+                            </button>
+                        </form> -->
+
+                        <!-- <form class="space-y-12" id="contact-form-submit" action="https://formsubmit.co/info@pickd.in" method="POST">
+    
+    <input type="hidden" name="_subject" value="New Website Inquiry!">
+
+    <input type="hidden" name="_captcha" value="false">
+
+    <input type="hidden" name="_next" value="https://pickd.in">
+
+    <div class="relative group">
+        <input type="text" id="c-name" name="name" placeholder="Your Name" required 
+            class="w-full bg-transparent border-b border-theme py-4 text-xl focus:outline-none focus:border-[#FF3131] transition-colors hoverable text-theme-main placeholder-theme-muted">
+    </div>
+
+    <div class="relative group">
+        <input type="email" id="c-email" name="email" placeholder="Your Email" required 
+            class="w-full bg-transparent border-b border-theme py-4 text-xl focus:outline-none focus:border-[#FF3131] transition-colors hoverable text-theme-main placeholder-theme-muted">
+    </div>
+
+    <div class="relative group">
+        <textarea id="c-message" name="message" placeholder="Tell us about the project" rows="1" required 
+            class="w-full bg-transparent border-b border-theme py-4 text-xl focus:outline-none focus:border-[#FF3131] transition-colors resize-none hoverable text-theme-main placeholder-theme-muted"></textarea>
+    </div>
+    
+    <button type="submit" id="form-btn" class="px-8 py-4 bg-[#FF3131] text-white font-bold text-lg uppercase tracking-wider hover:bg-gray-200 hover:text-black transition-colors duration-300 hoverable">
+    SUBMIT INQUIRY
+</button>
+</form> -->
+
+                        <form class="space-y-12" id="contact-form-submit"
+                            action="https://script.google.com/macros/s/AKfycbx9MjXG7da-10466kFI_yBg3Kz5_6fOVY8pFZWr3DOh7ry-V0GgXJBRjg6kJPWhRNb7/exec"
+                            method="POST">
+
+                            <div class="relative group">
+                                <input type="text" id="c-name" name="name" placeholder="Your Name" required
+                                    class="w-full bg-transparent border-b border-theme py-4 text-xl focus:outline-none focus:border-[#FF3131] transition-colors hoverable text-theme-main placeholder-theme-muted">
+                            </div>
+
+                            <div class="relative group">
+                                <input type="email" id="c-email" name="email" placeholder="Your Email" required
+                                    class="w-full bg-transparent border-b border-theme py-4 text-xl focus:outline-none focus:border-[#FF3131] transition-colors hoverable text-theme-main placeholder-theme-muted">
+                            </div>
+
+                            <div class="relative group">
+                                <textarea id="c-message" name="message" placeholder="Tell us about the project" rows="1"
+                                    required
+                                    class="w-full bg-transparent border-b border-theme py-4 text-xl focus:outline-none focus:border-[#FF3131] transition-colors resize-none hoverable text-theme-main placeholder-theme-muted"></textarea>
+                            </div>
+
+                            <!-- <button type="submit" id="form-btn" class="px-8 py-4 bg-[#FF3131] text-white font-bold text-lg uppercase tracking-wider hover:bg-gray-200 hover:text-black transition-colors duration-300 hoverable">
+        SUBMIT INQUIRY
+    </button> -->
+
+                            <button type="submit" id="form-btn"
+                                class="bg-[#FE3634] text-white font-bold text-lg uppercase tracking-wider transition-colors duration-300 hover:bg-gray-200 hover:text-black hoverable">
+                                <span class="btn-text">SEND ENQUIRY</span>
+                                <span class="btn-loader" hidden></span>
+                            </button>
+
+                        </form>
+
+                        <!-- Info -->
+                        <div class="flex flex-col justify-between text-theme-muted">
+                            <div>
+                                <p class="text-theme-main text-xl mb-6">Contact Info</p>
+                                <p class="mb-2 text-lg">
+                                    <a href="/cdn-cgi/l/email-protection#94fdfaf2fbd4e4fdf7fff0bafdfa" class="hover:text-[#FF3131] transition-colors"><span class="__cf_email__" data-cfemail="b6dfd8d0d9f6c6dfd5ddd298dfd8">[email&#160;protected]</span></a>
+                                </p>
+                                <p class="text-lg">
+                                    <a href="tel:+918871491373" class="hover:text-[#FF3131] transition-colors">+91
+                                        8871491373</a>
+                                </p>
+                                <p class="mt-8 text-sm uppercase tracking-widest opacity-60">Bandra West,
+                                    Mumbai<br>400050, Maharashtra</p>
+                            </div>
+
+                            <div class="mt-12 md:mt-0">
+                                <p class="text-theme-main text-xl mb-6">Socials</p>
+                                <ul class="space-y-2 text-lg">
+                                    <li><a href="https://www.instagram.com/pickd.in/" target="_blank"
+                                            class="hover:text-[#FF3131] transition-colors hoverable">Instagram</a></li>
+                                    <li><a href="https://x.com/itspickd?s=11"
+                                            class="hover:text-[#FF3131] transition-colors hoverable">Twitter / X</a>
+                                    </li>
+                                    <li><a href="https://www.linkedin.com/company/pickd-india/"
+                                            target="_blank"
+                                            class="hover:text-[#FF3131] transition-colors hoverable">LinkedIn</a></li>
+                                    <li><a href="#"
+                                            class="hover:text-[#FF3131] transition-colors hoverable">Awwwards</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer for Contact Page -->
+            <div class="py-6 px-6 md:px-12 border-t border-theme bg-theme-main">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-center text-xs text-theme-muted uppercase tracking-widest">
+                    <span>© 2024 PICKD. Agency</span>
+                    <div class="flex gap-6 mt-4 md:mt-0">
+                        <a href="https://www.instagram.com/pickd.in/" target="_blank"
+                            class="hover:text-[#FF3131]">Instagram</a>
+                        <a href="#" class="hover:text-[#FF3131]">Twitter</a>
+                        <a href="/cdn-cgi/l/email-protection#99f0f7fff6d9e9f0faf2fdb7f0f7" class="hover:text-[#FF3131]">Email</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END VIEW: CONTACT -->
+
+    </div> <!-- End Main Container -->
+
+    <!-- PROJECT MODAL SHEET -->
+    <div id="modal-backdrop" onclick="closeProjectModal()"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[90] opacity-0 pointer-events-none transition-opacity duration-500">
+    </div>
+
+    <div id="project-modal"
+        class="fixed inset-x-0 bottom-0 z-[100] h-[95vh] bg-theme-main transform translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] flex flex-col border-t border-[#FF3131] shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        <!-- Header / Controls -->
+        <div class="flex justify-between items-center p-6 md:p-8 border-b border-theme bg-theme-main z-10 sticky top-0">
+            <div>
+                <h2 id="modal-title" class="text-3xl md:text-5xl font-bold display-font text-theme-main uppercase">
+                    PROJECT NAME</h2>
+                <p id="modal-category" class="text-[#FF3131] text-xs uppercase tracking-widest mt-1">Category / Year</p>
+            </div>
+            <button onclick="closeProjectModal()"
+                class="text-theme-main hover:text-[#FF3131] text-4xl hoverable">&times;</button>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="overflow-y-auto flex-1 p-6 md:p-12 filter-scrollbar" id="modal-content">
+            <!-- 1. Video Frame (Top) -->
+            <div id="modal-video-container"
+                class="w-full aspect-video bg-black mb-12 relative overflow-hidden group border border-theme transition-all duration-300">
+                <!-- Abstract looping background video placeholder -->
+                <video id="modal-video" class="w-full h-full object-cover opacity-80" autoplay loop muted playsinline>
+                    <source src="https://videos.pexels.com/video-files/3163534/3163534-hd_1920_1080_30fps.mp4"
+                        type="video/mp4">
+                </video>
+                <!-- <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <h3 class="text-white text-xl uppercase tracking-[0.5em] mix-blend-overlay">System Preview</h3>
+                 </div> -->
+                <div class="absolute inset-0 flex items-end justify-end pointer-events-none p-6">
+                    <img src="pickdlogo_1.webp" alt="PICKD" class="w-24 opacity-50 mix-blend-overlay">
+                </div>
+            </div>
+
+            <!-- 2. Mockup Images (Grid) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-20" id="modal-gallery">
+                <!-- Images injected via JS -->
+            </div>
+
+            <!-- 3. Description (Bottom) -->
+            <div class="grid md:grid-cols-3 gap-12 mb-20 pt-12 border-t border-theme">
+                <div class="md:col-span-1">
+                    <h3 class="text-sm text-[#FF3131] uppercase tracking-widest mb-4">The Brief</h3>
+                    <p id="modal-desc-brief" class="text-theme-muted leading-relaxed">
+                        Reinvent the digital presence for a future-tech conglomerate. The goal was to dismantle
+                        traditional corporate aesthetics and replace them with a raw, brutalist interface that screams
+                        innovation.
+                    </p>
+                </div>
+                <div class="md:col-span-2">
+                    <h3 class="text-sm text-[#FF3131] uppercase tracking-widest mb-4">The Execution</h3>
+                    <p id="modal-desc-execution" class="text-theme-main text-lg md:text-xl leading-relaxed">
+                        We approached this project with a "mobile-first, motion-heavy" philosophy. Utilizing WebGL for
+                        fluid distortions and a custom physics engine for UI interactions, we created a site that feels
+                        alive. The visual language draws heavily from sci-fi telemetry and analog glitch art, resulting
+                        in a user experience that is both disorienting and captivating.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Next Project Nav -->
+            <div class="border-t border-theme mt-20 pt-12 flex justify-between items-center cursor-pointer hoverable group"
+                onclick="closeProjectModal()">
+                <span class="text-theme-muted uppercase tracking-widest text-sm">Next Case Study</span>
+                <span
+                    class="text-2xl md:text-5xl font-bold display-font text-theme-main group-hover:text-[#FF3131] transition-colors">NEXT
+                    PROJECT -></span>
+            </div>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // --- Modal Logic ---
+        function openProjectModal(element) {
+            const modal = document.getElementById('project-modal');
+            const backdrop = document.getElementById('modal-backdrop');
+
+            // Extract data from clicked element
+            const titleEl = element.querySelector('.project-title');
+            const categoryEl = element.querySelector('.project-category');
+            const title = titleEl ? titleEl.innerText : '';
+
+            if (titleEl) document.getElementById('modal-title').innerText = title;
+            if (categoryEl) document.getElementById('modal-category').innerText = categoryEl.innerText;
+
+            // Content Elements
+            const videoContainer = document.getElementById('modal-video-container');
+            const galleryEl = document.getElementById('modal-gallery');
+            const descBrief = document.getElementById('modal-desc-brief');
+            const descExecution = document.getElementById('modal-desc-execution');
+
+            // --- HELPER: Setup Video with Audio Toggle ---
+            function setupHeroVideo(src, isPortrait = false) {
+                // 1. Container Style
+                videoContainer.style.display = 'block';
+                if (isPortrait) {
+                    videoContainer.className = "w-full aspect-[9/16] max-w-sm mx-auto bg-black mb-12 relative overflow-hidden group border border-theme transition-all duration-300";
+                } else {
+                    videoContainer.className = "w-full aspect-video bg-black mb-12 relative overflow-hidden group border border-theme transition-all duration-300";
+                }
+
+                // 2. HTML Content (Video + Overlay + Button)
+                videoContainer.innerHTML = `
+                    <video class="hero-video w-full h-full object-cover" autoplay loop muted playsinline>
+                        <source src="${src}" type="video/mp4">
+                    </video>
+                    
+
+                    <div class="absolute inset-0 flex items-end justify-start pointer-events-none p-6">
+    <img src="logo/pickdlogo_1.webp" alt="PICKD" class="w-24 opacity-100 mix-blend-overlay">
+</div>
+
+                    <!-- Audio Toggle Button -->
+                    <button class="hero-audio-btn absolute bottom-4 right-4 z-30 flex items-center justify-center w-10 h-10 rounded-full bg-black/50 border border-white/20 text-white hover:bg-[#FF3131] hover:border-[#FF3131] transition-all backdrop-blur-md cursor-pointer hoverable">
+                        <!-- Muted Icon -->
+                        <svg class="icon-mute w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.75-4.75a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.75-4.75H4.875a.75.75 0 0 1-.75-.75V8.625a.75.75 0 0 1 .75-.75h3.375Z" />
+                        </svg>
+                        <!-- Sound Icon -->
+                        <svg class="icon-sound w-5 h-5 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+                        </svg>
+                    </button>
+                `;
+
+                // 3. Audio Logic
+                const video = videoContainer.querySelector('.hero-video');
+                const btn = videoContainer.querySelector('.hero-audio-btn');
+                const iconMute = videoContainer.querySelector('.icon-mute');
+                const iconSound = videoContainer.querySelector('.icon-sound');
+
+                if (btn && video) {
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        video.muted = !video.muted;
+                        if (video.muted) {
+                            iconMute.classList.remove('hidden');
+                            iconSound.classList.add('hidden');
+                        } else {
+                            iconMute.classList.add('hidden');
+                            iconSound.classList.remove('hidden');
+                        }
+                    };
+                }
+            }
+
+            // Clear existing gallery content
+            galleryEl.innerHTML = '';
+
+            // --- Custom Content Logic ---
+            if (title.includes('DAILY DAISY')) {
+                // DAILY DAISY: Portrait Video + 12 Images + Custom Text
+
+                // 1. Setup Video with Sound (Portrait)
+                (function(){
+                    var vc = document.getElementById("modal-video-container");
+                    vc.style.display = "block";
+                    vc.className = "w-full aspect-[9/16] max-w-sm mx-auto bg-black mb-12 relative overflow-hidden border border-theme transition-all duration-300";
+                    vc.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/hYsGK0KiEUQ?autoplay=1&mute=1&controls=0&loop=1&playlist=hYsGK0KiEUQ&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe><div class="absolute inset-0 flex items-end justify-start pointer-events-none p-6"><img src="logo/pickdlogo_1.png" alt="PICKD" class="w-24 opacity-100 mix-blend-overlay"></div>`;
+                    vc.onclick = function(){ var f = vc.querySelector("iframe"); if(f && f.src.indexOf("controls=1") === -1) f.src = f.src.replace("controls=0","controls=1"); };
+                })();
+
+                // 2. Info Update
+                // descBrief.innerText = "Redefining skincare for the modern minimalist. Daily Daisy isn't just about glowing skin; it's about glowing confidence. We stripped away the clinical jargon and replaced it with a voice that feels like a best friend.";
+                descBrief.innerHTML = "Redefining skincare for the modern minimalist. Daily Daisy isn't just about glowing skin; it's about glowing confidence. We stripped away the clinical jargon and replaced it with a voice that feels like a best friend.<br><br><small>*This is just one of our case studies.</small>";
+                descExecution.innerText = "The challenge was to stand out in a saturated market. We opted for a radical departure from the 'clean clinical' look, embracing raw, unfiltered textures and a vertical-first content strategy. The 12-piece visual campaign focuses on texture, touch, and the daily ritual of self-care, captured through intimate portraiture and macro videography.";
+
+                // 3. 12 Visuals
+                const dailyImages = [
+                    // "Daily Daisy 1.webp",
+                    "Daily Daisy 2.webp",
+                    "Daily Daisy 3.webp",
+                    "Daily Daisy 4.webp",
+                    //"Daily Daisy 5.webp",//
+                    "Daily Daisy 6.webp",
+                    "Daily Daisy 7.webp",
+                    "Daily Daisy 8.webp",
+                    "Daily Daisy 9.webp",
+                    "Daily Daisy 10.webp",
+                    "Daily Daisy 11.webp",
+                    "Daily Daisy 12.webp",
+                    "daily daisy y.png"
+                ];
+
+                dailyImages.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = "w-full h-auto object-cover transition-all duration-500 mb-4 rounded-sm";
+                    galleryEl.appendChild(img);
+                });
+
+            } else if (title.includes('SAB MARINE')) {
+                // SAB MARINE: NO Video + 12 Images + Custom Text
+
+                // 1. Hide Video Container
+                videoContainer.style.display = 'none';
+
+                // 2. Info Update
+                descBrief.innerText = "The ocean meets dining. SAB Marine required a brand identity that reflects the depth and mystery of the sea while inviting guests into a premium dining experience.";
+                descExecution.innerText = "We built a visual identity inspired by undersea motion and surface simplicity. Using fluid layouts, deep-sea textures, and confident typography, we crafted a brand language that feels natural, immersive, and alive. The result stays grounded in real lighting, real feel, and real connection—no artificial shine, no visual clutter.";
+
+                // 3. 12 Visuals
+                const sabImages = [
+                    "sab 1.webp",
+                    "sab 2.webp",
+                    "sab 3.webp",
+                    "sab 4.webp",
+                    "sab 5.webp",
+                    "sab 6.webp",
+                    "sab 7.webp",
+                    "sab 8.webp",
+                    "sab 9.webp",
+                    "sab 10.webp",
+                    "sab 11.webp",
+                    "sab 12.webp"
+                ];
+
+                sabImages.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = "w-full h-auto object-cover transition-all duration-500 mb-4 rounded-sm";
+                    galleryEl.appendChild(img);
+                });
+
+            } else if (title.includes('SMART MEDIC')) {
+                // SMART MEDIC: Landscape Image on Top (No Hero Video) + 4 Videos in Grid
+
+                // 1. Override Video Container for Image
+                videoContainer.style.display = 'block';
+                videoContainer.className = "w-full aspect-video bg-black mb-12 relative overflow-hidden group border border-theme transition-all duration-300";
+                videoContainer.innerHTML = `
+                    <img src="smart_photo1.webp" class="w-full h-full object-cover opacity-90">
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <h3 class="text-white text-xl uppercase tracking-[0.5em] mix-blend-overlay"></h3>
+                    </div>
+
+        
+
+                `;
+
+                // 2. Info Update
+                descBrief.innerText = "Transform the patient experience. Smart Medic needed a brand identity that bridged the gap between sterile medical efficiency and human warmth. The goal: Trust through transparency.";
+                descExecution.innerText = "We built a design system based on clarity and calm. Using a palette of reassuring teals and crisp whites, we developed an interface that simplifies complex health data. The visual language utilizes soft gradients and rounded geometry to make medical information accessible, not intimidating. The rebrand included a complete overhaul of their digital app interface and physical wayfinding systems.";
+
+                // 3. 4 Videos in Grid
+                var medicYTIds = ["qeNKN7tMFzg","2keN2In6P6c","RxbocTdcAKM","fG1_DHmJBko"];
+                medicYTIds.forEach(function(ytId) {
+                    var vidWrapper = document.createElement("div");
+                    vidWrapper.className = "w-full aspect-video relative overflow-hidden rounded-sm border border-theme bg-black";
+                    vidWrapper.innerHTML = '<iframe class="w-full h-full" src="https://www.youtube.com/embed/' + ytId + '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + ytId + '&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>';
+                    vidWrapper.onclick = function(){ var f = vidWrapper.querySelector("iframe"); if(f && f.src.indexOf("controls=1") === -1) f.src = f.src.replace("controls=0","controls=1"); };
+                    galleryEl.appendChild(vidWrapper);
+                });
+
+            } else if (title.includes('UPANDUP.LIFE')) {
+                // UPANDUP.LIFE: NO Video + 6 Images + Custom Text
+
+                // 1. Hide Video Container
+                videoContainer.style.display = 'none';
+
+                // 2. Info Update
+                descBrief.innerText = "Workforce intelligence built into digital clarity. UpandUp required a platform that transforms complex HR data into intuitive, actionable insights for enterprise leaders.";
+                descExecution.innerText = "We stripped away the noise to focus on data legibility. The interface utilizes a high-contrast monochromatic palette with purposeful accent colors to highlight key metrics. We developed a custom iconography set and a modular grid system that allows the dashboard to scale seamlessly across devices, ensuring that workforce intelligence is always accessible.";
+
+                // 3. 10 Visuals
+                const upImages = [
+                    "upandup 1.webp",
+                    "upandup 2.webp",
+                    "upandup 3.webp",
+                    "upandup 4.png",
+                    "upandup 5.webp",
+                    "upandup 6.webp",
+                    "upandup 7.webp",
+                    "upandup 8.webp",
+                    "upandup 8.webp",
+                ];
+
+                upImages.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = "w-full h-auto object-cover transition-all duration-500 mb-4 rounded-sm";
+                    galleryEl.appendChild(img);
+                });
+
+            } else if (title.includes('LEARNIX')) {
+                // LEARNIX: Landscape Video + 6 Images + Custom Text
+
+                // 1. Setup Video with Sound (Landscape)
+                (function(){
+                    var vc = document.getElementById("modal-video-container");
+                    vc.style.display = "block";
+                    vc.className = "w-full aspect-video bg-black mb-12 relative overflow-hidden border border-theme transition-all duration-300";
+                    vc.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/1wZFyRS-1NY?autoplay=1&mute=1&controls=0&loop=1&playlist=1wZFyRS-1NY&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe><div class="absolute inset-0 flex items-end justify-start pointer-events-none p-6"><img src="logo/pickdlogo_1.png" alt="PICKD" class="w-24 opacity-100 mix-blend-overlay"></div>`;
+                    vc.onclick = function(){ var f = vc.querySelector("iframe"); if(f && f.src.indexOf("controls=1") === -1) f.src = f.src.replace("controls=0","controls=1"); };
+                })();
+
+                // 2. Info Update
+                descBrief.innerText = "Education is no longer static. Learnix required a brand system that moves at the speed of curiosity. We aimed to bridge the gap between gamified engagement and academic rigor, creating a platform that adapts to the learner's context.";
+                descExecution.innerText = "We built a dual-mode interface: 'Focus Mode' for deep work (landscape) and 'Spark Mode' for quick, vertical consumption (portrait). The visual identity uses dynamic motion blur and kinetic type to represent the transfer of knowledge. The 6-part visual series highlights the seamless transition between these states, using a vibrant yet focused color palette.";
+
+                // 3. 6 Visuals
+                const learnixImages = [
+                    "learnix 1.webp",
+                    "learnix 2.webp",
+                    "learnix 3.avif",
+                    "learnix 4.webp",
+                    "learnix 5.webp",
+                    "learnix 6.avif"
+                ];
+
+                learnixImages.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = "w-full h-auto object-cover transition-all duration-500 mb-4 rounded-sm";
+                    galleryEl.appendChild(img);
+                });
+
+            } else if (title.includes('SMART CHAIR')) {
+                // SMART CHAIR: Landscape Video + 4 Portrait Visuals + Custom Text
+
+                // 1. Setup Video with Sound (Landscape)
+                (function(){
+                    var vc = document.getElementById("modal-video-container");
+                    vc.style.display = "block";
+                    vc.className = "w-full aspect-video bg-black mb-12 relative overflow-hidden border border-theme transition-all duration-300";
+                    vc.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/WkrXl-9RTP4?autoplay=1&mute=1&controls=0&loop=1&playlist=WkrXl-9RTP4&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe><div class="absolute inset-0 flex items-end justify-start pointer-events-none p-6"><img src="logo/pickdlogo_1.png" alt="PICKD" class="w-24 opacity-100 mix-blend-overlay"></div>`;
+                    vc.onclick = function(){ var f = vc.querySelector("iframe"); if(f && f.src.indexOf("controls=1") === -1) f.src = f.src.replace("controls=0","controls=1"); };
+                })();
+
+                // 2. Info Update
+                descBrief.innerText = "The future of sitting is active. The Smart Chair isn't just furniture; it's a biomechanical interface. Our task was to create a visual identity for an AI-driven chair that adjusts to your posture in real-time.";
+                descExecution.innerText = "We stepped away from the typical 'soft comfort' branding of furniture and leaned into precision engineering. The brand visual language uses wireframe meshes and heat-map gradients to visualize the chair's sensing capabilities. The 4-part visual series showcases the chair's sleek silhouette against brutalist architectural backdrops, emphasizing structure and form.";
+
+                // 3. 4 Portrait Visuals
+                const chairImages = [
+                    "chair 1.webp",
+                    "chair 2.webp",
+                    "chair 3.webp",
+                    "chair 4.webp"
+                ];
+
+                chairImages.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    // Standard portrait display without special spans
+                    img.className = "w-full aspect-[4/5] object-cover transition-all duration-500 mb-4 rounded-sm";
+                    galleryEl.appendChild(img);
+                });
+
+            } else if (title.includes('NIVIA')) {
+                // NIVIA: Landscape Video + 4 Images + Custom Text + Audio Toggle
+
+                // 1. Setup Video with Sound (Landscape)
+                (function(){
+                    var vc = document.getElementById("modal-video-container");
+                    vc.style.display = "block";
+                    vc.className = "w-full aspect-video bg-black mb-12 relative overflow-hidden border border-theme transition-all duration-300";
+                    vc.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/rDz2fLZAB48?autoplay=1&mute=1&controls=0&loop=1&playlist=rDz2fLZAB48&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe><div class="absolute inset-0 flex items-end justify-start pointer-events-none p-6"><img src="logo/pickdlogo_1.png" alt="PICKD" class="w-24 opacity-100 mix-blend-overlay"></div>`;
+                    vc.onclick = function(){ var f = vc.querySelector("iframe"); if(f && f.src.indexOf("controls=1") === -1) f.src = f.src.replace("controls=0","controls=1"); };
+                })();
+
+                // 2. Info Update
+                // descBrief.innerText = "Revitalizing a legacy. Nivia needed to shed its static image and embrace a dynamic, motion-first identity that resonates with the modern athlete. The goal was to visualize energy.";
+                descBrief.innerHTML = "Revitalizing a legacy. Nivia needed to shed its static image and embrace a dynamic, motion-first identity that resonates with the modern athlete. The goal was to visualize energy.<br><br><small>*This is just one of our case studies.</small>";
+                descExecution.innerText = "We developed a kinetic visual system where typography and imagery are never still. Using high-frame-rate cinematography and data-moshing techniques, we created a brand language that feels fast, fluid, and unstoppable. The classic blue palette was electrified to stand out in digital feeds, creating a visual identity that sprints alongside the user.";
+
+                // 3. 4 Visuals (Sports/Blue/Motion theme)
+                const niviaImages = [
+                    "nivia 1.webp",
+                    "nivia 2.webp",
+                    "nivia 3.webp",
+                    "nivia 4.webp"
+                ];
+
+                niviaImages.forEach((src) => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    // Standard grid layout for 4 items
+                    img.className = "w-full h-auto object-cover transition-all duration-500 mb-4 rounded-sm";
+                    galleryEl.appendChild(img);
+                });
+
+            } else if (title.includes('THE CANTEEN')) {
+                // THE CANTEEN: NO Video + 7 Images + Custom Text
+
+                // 1. Hide Video Container
+                videoContainer.style.display = 'none';
+
+                // 2. Info Update
+                descBrief.innerText = "Revive the spirit of the college canteen. The Canteen isn't just a place to eat; it's a memory machine. We needed to bottle that specific feeling of shared meals, cheap coffee, and endless conversations into a cohesive brand identity.";
+                descExecution.innerText = "We leaned hard into 'academic retro'. The typography borrows from vintage university yearbooks, paired with a warm, sepia-toned color palette. The menu design mimics old exam papers, and the environmental graphics feature hand-drawn doodles reminiscent of desk etchings. It's nostalgia, but graded on a curve.";
+
+                // 3. 7 Visuals (Retro/Food/Social theme)
+                const canteenImages = [
+                    "cant 13.webp", // Main retro vibe
+                    "cant 2.webp", // Burger/Food
+                    "cant 12.webp", // Burger/Food
+                    "cant 3.webp", // Cafe interior
+                    "cant 1.webp", // Burger/Food
+                    "cant 14.webp", // Burger/Food
+                    "cant 15.webp", // Burger/Food
+                    "cant 4.webp", // Menu/Branding
+                    "cant 10.webp", // Menu/Branding
+                    "cant 11.webp", // Social/People
+                    "cant 5.webp", // Social/People
+                    "cant 6.webp", // Restaurant vibe
+                    //"cant 7.webp"  // Packaging//
+                    // "cant 16.webp", // Burger/Food//
+                ];
+
+                canteenImages.forEach((src, index) => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    // Make the 1st and 7th (last) image span 2 columns
+                    const spanClass = (index === 0 || index === 6) ? 'md:col-span-2' : '';
+                    img.className = `w-full h-auto object-cover transition-all duration-500 mb-4 rounded-sm ${spanClass}`;
+                    galleryEl.appendChild(img);
+                });
+
+            } else if (title.includes('ANJANI GRAM')) {
+                // ANJANI GRAM: NO Video + 6 Images + Custom Text
+
+                // 1. Hide Video Container
+                videoContainer.style.display = 'none';
+
+                // 2. Info Update
+                descBrief.innerText = "Capturing the eternal spirit of Kashi. Anjani Gram isn't just a destination; it's a pilgrimage. The task was to translate centuries of devotion into a visual identity that resonates with the modern seeker while respecting ancient traditions.";
+                descExecution.innerText = "We adopted a 'documentary-style' approach to the brand visuals. Utilizing warm, golden-hour lighting and texture-rich photography, we crafted a narrative that feels timeless. The typography blends calligraphy with modern sans-serifs, creating a bridge between the old world and the new.";
+
+                // 3. 6 Visuals
+                const anjaniImages = [
+                    "AGP 0.jpg",
+                    "AGP 1.webp",
+                    "AGP 2.webp",
+                    "AGP 3.webp",
+                    "AGP 4.webp",
+                    "AGP 5.webp",
+                    "AGP 6.webp",
+                    "AGP 7.webp",
+                    "AGP 8.webp",
+                    "AGP 9.webp",
+                ];
+
+                anjaniImages.forEach((src, index) => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    const spanClass = (index === 0 || index === 5) ? 'md:col-span-2' : '';
+                    img.className = `w-full h-auto object-cover transition-all duration-500 mb-4 rounded-sm ${spanClass}`;
+                    galleryEl.appendChild(img);
+                });
+
+            } else if (title.includes('SWAROVSKI')) {
+                // SWAROVSKI: NO Video + 6 Images + Custom Text
+
+                // 1. Hide Video Container
+                videoContainer.style.display = 'none';
+
+                // 2. Info Update
+                // descBrief.innerText = "Crystal elegance captured in minimal frames. Swarovski needed a campaign that moved beyond tradition, embracing a sharp, modern aesthetic that highlights precision and brilliance.";
+                descBrief.innerHTML = "Crystal elegance captured in minimal frames. Swarovski needed a campaign that moved beyond tradition, embracing a sharp, modern aesthetic that highlights precision and brilliance.<br><br><small>*This is just one of our case studies.</small>";
+                descExecution.innerText = "We focused on light and refraction. The visual identity uses high-contrast photography and stark, minimal typography to let the product speak. The digital experience is built around discovery, with interactive galleries that allow users to explore the facets of every piece in detail.";
+
+                // 3. 6 Images
+                const swarVisuals = [
+                    "swar 1.webp",
+                    "swar 2.webp",
+                    "swar 3.webp",
+                    "swar 4.webp",
+                    "swar 5.webp",
+                    "swar 6.webp"
+                ];
+
+                swarVisuals.forEach((src) => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = "w-full h-auto object-cover transition-all duration-500 mb-4 rounded-sm";
+                    galleryEl.appendChild(img);
+                });
+
+            } else {
+                // DEFAULT PROJECT: Landscape Video + 6 Images + Default Text
+
+                // 1. Setup Video with Sound (Landscape)
+                setupHeroVideo("https://videos.pexels.com/video-files/3163534/3163534-hd_1920_1080_30fps.mp4", false);
+
+                // 2. Default Info
+                descBrief.innerText = "Reinvent the digital presence for a future-tech conglomerate. The goal was to dismantle traditional corporate aesthetics and replace them with a raw, brutalist interface that screams innovation.";
+                descExecution.innerText = "We approached this project with a 'mobile-first, motion-heavy' philosophy. Utilizing WebGL for fluid distortions and a custom physics engine for UI interactions, we created a site that feels alive. The visual language draws heavily from sci-fi telemetry and analog glitch art, resulting in a user experience that is both disorienting and captivating.";
+
+                // 3. Default 6 Images
+                const defaultImages = [
+                    "https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=2000",
+                    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2000",
+                    "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000",
+                    "https://images.unsplash.com/photo-1558655146-d09347e0b7a9?q=80&w=2000",
+                    "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2000",
+                    "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000"
+                ];
+
+                defaultImages.forEach((src, index) => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    // Apply special spanning for grid variety in default view
+                    const spanClass = (index === 4 || index === 5) ? 'md:col-span-2' : '';
+                    const marginClass = (index % 2 !== 0) ? 'mt-0 md:mt-12' : '';
+                    img.className = `w-full h-auto object-cover transition-all duration-500 ${spanClass} ${marginClass} rounded-sm`;
+                    galleryEl.appendChild(img);
+                });
+            }
+
+            // Show
+            modal.classList.remove('translate-y-full');
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+
+            // Disable background scroll
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProjectModal() {
+            const modal = document.getElementById('project-modal');
+            const backdrop = document.getElementById('modal-backdrop');
+
+            // --- NEW CODE: FIND AND STOP VIDEO ---
+            // Look for any video inside the modal container
+            const video = document.querySelector('#modal-video-container video');
+            if (video) {
+                video.pause();        // Stop the video/audio
+                video.currentTime = 0; // Rewind to start
+                video.muted = true;    // Mute it just in case
+            }
+            // -------------------------------------
+
+            // Hide
+            modal.classList.add('translate-y-full');
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
+
+            // Enable background scroll
+            document.body.style.overflow = '';
+        }
+
+        // --- Theme Toggle Logic ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+
+            // Update button text
+            const btn = document.getElementById('themeBtn');
+            if (btn) btn.innerText = `Mode: ${next.charAt(0).toUpperCase() + next.slice(1)}`;
+        }
+
+        // --- Router / Navigation Logic ---
+        let currentView = 'home';
+
+        function navigateTo(viewId, scrollTargetId = null) {
+            // scrollTargetId can also serve as the filter category for Work page
+            if (viewId === currentView && !scrollTargetId) return;
+
+            const views = ['home', 'work', 'services', 'about', 'contact']; // Removed playground from views since it's on home now
+            const targetViewEl = document.getElementById(`view-${viewId}`);
+            const currentViewEl = document.getElementById(`view-${currentView}`);
+
+            // Kill triggers
+            ScrollTrigger.getAll().forEach(t => t.kill());
+
+            const switchViews = () => {
+                // Hide all views first to be safe
+                views.forEach(v => {
+                    const el = document.getElementById(`view-${v}`);
+                    if (el) el.classList.add('hidden-view');
+                });
+
+                // Show Target
+                if (targetViewEl) {
+                    targetViewEl.classList.remove('hidden-view');
+                    window.scrollTo(0, 0);
+
+                    // Fade In Target
+                    gsap.fromTo(targetViewEl, { opacity: 0 }, { opacity: 1, duration: 0.5 });
+
+                    // Init Animations based on view
+                    if (viewId === 'home') initHomeAnimations();
+                    if (viewId === 'work') initWorkAnimations(scrollTargetId || 'all'); // Pass category or default 'all'
+                    if (viewId === 'services') initServicesAnimations();
+                    if (viewId === 'about') initAboutAnimations();
+                    if (viewId === 'contact') initContactAnimations();
+
+                    // Force ScrollTrigger refresh to ensure animations calculate correct start positions
+                    setTimeout(() => {
+                        ScrollTrigger.refresh();
+                    }, 100);
+                }
+
+                currentView = viewId;
+
+                // Handle scrolling if it's a home page anchor, otherwise ignore as it might be a work filter
+                if (viewId === 'home' && scrollTargetId) {
+                    setTimeout(() => {
+                        const target = document.getElementById(scrollTargetId);
+                        if (target) target.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+            };
+
+            if (currentViewEl) {
+                // Transition: Fade Out Current
+                gsap.to(currentViewEl, {
+                    opacity: 0,
+                    duration: 0.5,
+                    onComplete: switchViews
+                });
+            } else {
+                // If no current view (e.g. initial load error?), just switch
+                switchViews();
+            }
+
+            // Update Nav Active State
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+
+            const navId = `nav-${viewId}`;
+            const navLink = document.getElementById(navId);
+            if (navLink) navLink.classList.add('active');
+
+            // Handle home playground anchor specific nav highlight logic
+            if (viewId === 'home' && scrollTargetId === 'playground') {
+                const pgNav = document.getElementById('nav-playground');
+                if (pgNav) {
+                    document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+                    pgNav.classList.add('active');
+                }
+            }
+        }
+
+
+        // --- Loader & Setup ---
+        window.addEventListener('load', () => {
+            // const loader = document.getElementById('loader');
+            // loader.style.transform = 'translateY(-100%)';
+
+            // Setup persistent interactions (EventListeners)
+            setupWorkInteractions();
+
+            // Initialize animations after load
+            initHomeAnimations();
+
+            // --- Custom Scrollbar Logic for #work-slider ---
+            const slider = document.getElementById('work-slider');
+            const thumb = document.getElementById('custom-slider-thumb');
+            const track = document.getElementById('custom-slider-track');
+
+            if (slider && thumb && track) {
+                slider.addEventListener('scroll', () => {
+                    const scrollPercentage = slider.scrollLeft / (slider.scrollWidth - slider.clientWidth);
+                    const maxThumbLeft = track.clientWidth - thumb.clientWidth;
+                    const thumbLeft = scrollPercentage * maxThumbLeft;
+                    thumb.style.left = `${thumbLeft}px`;
+                });
+
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+
+                slider.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    slider.style.cursor = 'grabbing';
+                    startX = e.pageX;
+                    scrollLeft = slider.scrollLeft;
+                });
+                slider.addEventListener('mouseleave', () => {
+                    isDown = false;
+                    slider.style.cursor = 'grab';
+                });
+                slider.addEventListener('mouseup', () => {
+                    isDown = false;
+                    slider.style.cursor = 'grab';
+                });
+                slider.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX;
+                    const walk = (x - startX) * 2;
+                    slider.scrollLeft = scrollLeft - walk;
+                });
+
+                let isThumbDown = false;
+                let thumbStartX;
+                let thumbStartLeft;
+
+                thumb.addEventListener('mousedown', (e) => {
+                    isThumbDown = true;
+                    thumbStartX = e.pageX;
+                    const style = window.getComputedStyle(thumb);
+                    thumbStartLeft = parseFloat(style.left);
+                    thumb.style.cursor = 'grabbing';
+                    e.stopPropagation();
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isThumbDown) {
+                        isThumbDown = false;
+                        thumb.style.cursor = 'grab';
+                    }
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isThumbDown) return;
+                    e.preventDefault();
+                    const deltaX = e.pageX - thumbStartX;
+                    const maxThumbLeft = track.clientWidth - thumb.clientWidth;
+                    let newLeft = thumbStartLeft + deltaX;
+                    newLeft = Math.max(0, Math.min(newLeft, maxThumbLeft));
+                    thumb.style.left = `${newLeft}px`;
+                    const scrollPercentage = newLeft / maxThumbLeft;
+                    slider.scrollLeft = scrollPercentage * (slider.scrollWidth - slider.clientWidth);
+                });
+            }
+
+            // --- Drag Scroll Logic for Filters ---
+            const filterContainer = document.getElementById('filter-scroll-container');
+            if (filterContainer) {
+                let isFilterDown = false;
+                let filterStartX;
+                let filterScrollLeft;
+
+                filterContainer.addEventListener('mousedown', (e) => {
+                    isFilterDown = true;
+                    filterContainer.style.cursor = 'grabbing';
+                    filterStartX = e.pageX - filterContainer.offsetLeft;
+                    filterScrollLeft = filterContainer.scrollLeft;
+                });
+                filterContainer.addEventListener('mouseleave', () => {
+                    isFilterDown = false;
+                    filterContainer.style.cursor = 'grab';
+                });
+                filterContainer.addEventListener('mouseup', () => {
+                    isFilterDown = false;
+                    filterContainer.style.cursor = 'grab';
+                });
+                filterContainer.addEventListener('mousemove', (e) => {
+                    if (!isFilterDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - filterContainer.offsetLeft;
+                    const walk = (x - filterStartX) * 2;
+                    filterContainer.scrollLeft = filterScrollLeft - walk;
+                });
+            }
+
+            // --- SPACE SHOOTER INIT ---
+            initSpaceShooter();
+
+            // --- CONTACT FORM LOGIC ---
+            const cForm = document.getElementById('contact-form');
+            if (cForm) {
+                cForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const name = document.getElementById('c-name').value.trim();
+                    const email = document.getElementById('c-email').value.trim();
+                    const message = document.getElementById('c-message').value.trim();
+
+                    if (name && email && message) {
+                        const subject = `New Inquiry from ${name}`;
+                        const body = `Name: ${name}\nEmail: ${email}\n\nProject Details:\n${message}`;
+
+                        // Use mailto to open default mail client
+                        window.location.href = `mailto:info@pickd.in?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+                        // Optional: Reset form after brief delay
+                        setTimeout(() => cForm.reset(), 1000);
+                    }
+                });
+            }
+        });
+
+        // --- Mobile Menu ---
+        const menuBtn = document.getElementById('menuBtn');
+        const closeMenuBtn = document.getElementById('closeMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        function toggleMenu() {
+            mobileMenu.classList.toggle('active');
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeMenuBtn.addEventListener('click', toggleMenu);
+
+
+        // --- Custom Cursor Logic ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+
+        document.body.addEventListener('mouseover', (e) => {
+            const target = e.target.closest('.hoverable');
+            if (target) {
+                cursorOutline.classList.add('hovered');
+                const type = target.getAttribute('data-cursor');
+                if (type === 'view') {
+                    cursorOutline.style.width = '100px';
+                    cursorOutline.style.height = '100px';
+                    cursorOutline.innerHTML = '<span class="flex items-center justify-center h-full text-black text-xs font-bold">VIEW</span>';
+                } else if (type === 'big') {
+                    cursorOutline.style.width = '60px';
+                    cursorOutline.style.height = '60px';
+                } else if (type === 'logo') {
+                    // specific logo cursor? default hover is fine
+                }
+            }
+        });
+
+        document.body.addEventListener('mouseout', (e) => {
+            const target = e.target.closest('.hoverable');
+            if (target) {
+                cursorOutline.classList.remove('hovered');
+                cursorOutline.style.width = '';
+                cursorOutline.style.height = '';
+                cursorOutline.innerHTML = '';
+            }
+        });
+
+        // Mouse Move
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // --- Animations Setup ---
+
+        function initHomeAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+            // 4. Service Images (Home)
+            const serviceItems = document.querySelectorAll('#view-home .service-item');
+            serviceItems.forEach(item => {
+                const img = item.querySelector('.service-img');
+                const rotation = img.getAttribute('data-rotation') || 0;
+                gsap.set(img, { xPercent: -50, yPercent: -50, rotate: rotation });
+                item.addEventListener('mouseenter', () => {
+                    if (window.innerWidth > 768) {
+                        gsap.to(img, { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" });
+                    }
+                });
+                item.addEventListener('mousemove', (e) => {
+                    if (window.innerWidth > 768) {
+                        gsap.to(img, { x: e.clientX, y: e.clientY, duration: 0.5, ease: "power2.out" });
+                    }
+                });
+                item.addEventListener('mouseleave', () => {
+                    if (window.innerWidth > 768) {
+                        gsap.to(img, { opacity: 0, scale: 0.8, duration: 0.3, ease: "power2.in" });
+                    }
+                });
+            });
+
+            // 2. About Section Animations (Home)
+            const scrambleElements = document.querySelectorAll('#view-home .scramble-text');
+            const randomChars = "!@#$%^&*()_+~|}{[]:;?><,./-=";
+
+            scrambleElements.forEach(el => {
+                const originalText = el.getAttribute('data-value');
+                ScrollTrigger.create({
+                    trigger: el,
+                    start: "top 80%",
+                    onEnter: () => {
+                        let iteration = 0;
+                        let interval = setInterval(() => {
+                            el.innerText = originalText
+                                .split("")
+                                .map((letter, index) => {
+                                    if (index < iteration) {
+                                        return originalText[index];
+                                    }
+                                    return randomChars[Math.floor(Math.random() * 26)];
+                                })
+                                .join("");
+
+                            if (iteration >= originalText.length) {
+                                clearInterval(interval);
+                            }
+
+                            iteration += 1 / 3;
+                        }, 30);
+                    }
+                });
+            });
+
+            gsap.utils.toArray('#view-home .reveal-paragraph').forEach((el, i) => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 85%"
+                    },
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    delay: i * 0.2,
+                    ease: "power3.out"
+                });
+            });
+
+            gsap.from("#view-home .stat-card", {
+                scrollTrigger: {
+                    trigger: "#view-home .stat-card",
+                    start: "top 90%"
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: "power2.out"
+            });
+        }
+
+        // --- NEW: Work Page Interaction Setup (Run ONCE) ---
+        function setupWorkInteractions() {
+            // 1. Filter Logic
+            const filters = document.querySelectorAll('.work-filter-btn');
+            const items = document.querySelectorAll('.work-card');
+
+            filters.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Active state
+                    filters.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const filterValue = btn.getAttribute('data-filter');
+
+                    //  // Animate Filtering
+                    //  items.forEach(item => {
+                    //      const category = item.getAttribute('data-category');
+
+                    //      if(filterValue === 'all' || filterValue === category) {
+                    //          // Show
+                    //          gsap.to(item, {
+                    //              opacity: 1,
+                    //              scale: 1,
+                    //              display: "block",
+                    //              duration: 0.5,
+                    //              ease: "power2.out"
+                    //          });
+                    //      } else {
+                    //          // Hide
+                    //          gsap.to(item, {
+                    //              opacity: 0,
+                    //              scale: 0.9,
+                    //              display: "none",
+                    //              duration: 0.3,
+                    //              ease: "power2.in"
+                    //          });
+                    //      }
+                    //  });
+
+
+                    items.forEach(item => {
+                        // Get categories and split by space into a list
+                        const categories = item.getAttribute('data-category').split(' ');
+                        const filterValue = btn.getAttribute('data-filter'); // Ensure we get the button's filter value
+
+                        // Check if 'all' is selected OR if the list contains the filter value
+                        if (filterValue === 'all' || categories.includes(filterValue)) {
+                            // SHOW ITEM
+                            gsap.to(item, {
+                                opacity: 1,
+                                scale: 1,
+                                display: "block",
+                                duration: 0.5,
+                                ease: "power2.out"
+                            });
+                        } else {
+                            // HIDE ITEM
+                            gsap.to(item, {
+                                opacity: 0,
+                                scale: 0.9,
+                                display: "none",
+                                duration: 0.3,
+                                ease: "power2.in"
+                            });
+                        }
+                    });
+
+                });
+            });
+
+            // 2. Floating Image Logic (Desktop)
+            if (window.innerWidth > 768) {
+                const previewContainer = document.getElementById('work-floating-preview');
+                const previewImg = document.getElementById('work-preview-img');
+
+                if (previewContainer) {
+                    const xTo = gsap.quickTo(previewContainer, "left", { duration: 0.4, ease: "power3.out" });
+                    const yTo = gsap.quickTo(previewContainer, "top", { duration: 0.4, ease: "power3.out" });
+
+                    items.forEach(item => {
+                        const imgChild = item.querySelector('img');
+                        if (!imgChild) return;
+                        const src = imgChild.src;
+
+                        item.addEventListener('mouseenter', () => {
+                            if (previewImg) previewImg.src = src;
+                            gsap.to(previewContainer, { opacity: 1, scale: 1, duration: 0.3 });
+                        });
+
+                        item.addEventListener('mousemove', (e) => {
+                            xTo(e.clientX);
+                            yTo(e.clientY);
+                        });
+
+                        item.addEventListener('mouseleave', () => {
+                            gsap.to(previewContainer, { opacity: 0, scale: 0.8, duration: 0.3 });
+                        });
+                    });
+                }
+            }
+        }
+
+        // --- Updated: Init Work Animations (Run on View Entry) ---
+        function initWorkAnimations(filterCategory = 'all') {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // 1. Set Initial Filter State without animation
+            const filters = document.querySelectorAll('.work-filter-btn');
+            const items = document.querySelectorAll('.work-card');
+
+            // Update Active Button
+            filters.forEach(b => {
+                if (b.getAttribute('data-filter') === filterCategory) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+
+            //  // Update Items Visibility
+            //  items.forEach(item => {
+            //      const category = item.getAttribute('data-category');
+            //      if(filterCategory === 'all' || filterCategory === category) {
+            //          item.style.display = 'block';
+            //          item.style.opacity = '1';
+            //          item.style.transform = 'scale(1)';
+            //      } else {
+            //          item.style.display = 'none';
+            //          item.style.opacity = '0';
+            //      }
+            //  });
+
+            // Update Items Visibility
+            items.forEach(item => {
+                // Get the categories and split them into a list
+                const categories = item.getAttribute('data-category').split(' ');
+
+                if (filterCategory === 'all' || categories.includes(filterCategory)) {
+                    item.style.display = 'block';
+                    item.style.opacity = '1';
+                    item.style.transform = 'scale(1)';
+                } else {
+                    item.style.display = 'none';
+                    item.style.opacity = '0';
+                }
+            });
+
+            // 2. Animate VISIBLE items in
+            const visibleItems = Array.from(items).filter(item => item.style.display !== 'none');
+
+            gsap.fromTo(visibleItems,
+                { y: 50, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power2.out" }
+            );
+        }
+
+        function initServicesAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+            gsap.from(".service-row", {
+                scrollTrigger: {
+                    trigger: ".service-row",
+                    start: "top 90%"
+                },
+                x: -50,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: "power2.out"
+            });
+        }
+
+        function initAboutAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            const scrambleElements = document.querySelectorAll('#view-about .scramble-text');
+            const randomChars = "!@#$%^&*()_+~|}{[]:;?><,./-=";
+
+            scrambleElements.forEach(el => {
+                const originalText = el.getAttribute('data-value');
+                ScrollTrigger.create({
+                    trigger: el,
+                    start: "top 80%",
+                    onEnter: () => {
+                        let iteration = 0;
+                        let interval = setInterval(() => {
+                            el.innerText = originalText
+                                .split("")
+                                .map((letter, index) => {
+                                    if (index < iteration) {
+                                        return originalText[index];
+                                    }
+                                    return randomChars[Math.floor(Math.random() * 26)];
+                                })
+                                .join("");
+
+                            if (iteration >= originalText.length) {
+                                clearInterval(interval);
+                            }
+
+                            iteration += 1 / 3;
+                        }, 30);
+                    }
+                });
+            });
+
+            gsap.utils.toArray('#view-about .reveal-paragraph').forEach((el, i) => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 85%"
+                    },
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    delay: i * 0.2,
+                    ease: "power3.out"
+                });
+            });
+
+            gsap.from("#view-about .stat-card", {
+                scrollTrigger: {
+                    trigger: ".stat-card",
+                    start: "top 90%"
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: "power2.out"
+            });
+
+            // Collective Cards Fix
+            // 1. Clear any conflicting inline styles from previous navigations
+            gsap.set(".collective-card", { clearProps: "all" });
+
+            // 2. Use Batch for better handling of multiple grid items or standard fromTo with stagger
+            ScrollTrigger.batch(".collective-card", {
+                onEnter: batch => gsap.fromTo(batch,
+                    { y: 50, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: "power2.out", overwrite: true }
+                ),
+                start: "top 85%"
+            });
+        }
+
+        function initContactAnimations() {
+            // Simple staggered reveal for the form fields
+            gsap.from(".input-group", {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                delay: 0.3,
+                ease: "power2.out"
+            });
+        }
+
+        // --- Global Floating Elements Animation (Single Instance) ---
+        const heroTitle = document.querySelector('h1');
+
+        document.addEventListener('mousemove', (e) => {
+            if (currentView === 'home') {
+                const moveX = (e.clientX - window.innerWidth / 2) * 0.02;
+                const moveY = (e.clientY - window.innerHeight / 2) * 0.02;
+
+                const title = document.querySelector('#view-home h1');
+                if (title) {
+                    gsap.to(title, {
+                        x: moveX,
+                        y: moveY,
+                        duration: 1
+                    });
+                }
+            }
+        });
+
+        // --- SPACE SHOOTER GAME LOGIC ---
+        function initSpaceShooter() {
+            const canvas = document.getElementById('gameCanvas');
+            const container = document.getElementById('playground');
+
+            if (!canvas || !container) return;
+
+            const ctx = canvas.getContext('2d');
+            const scoreEl = document.getElementById('scoreEl');
+            const speedSlider = document.getElementById('speedSlider');
+            const speedVal = document.getElementById('speedVal');
+            const winScreen = document.getElementById('win-screen');
+            const continueBtn = document.getElementById('continue-btn');
+
+            let width, height;
+            let animationId;
+            let score = 0;
+            let frames = 0;
+            let gameActive = false;
+            let gameOver = false;
+            let isPaused = false;
+            let gameSpeed = 1.0;
+            let hasWon = false;
+
+            // Speed Slider
+            if (speedSlider) {
+                speedSlider.addEventListener('input', (e) => {
+                    gameSpeed = parseFloat(e.target.value);
+                    if (speedVal) speedVal.textContent = gameSpeed.toFixed(1);
+                    e.target.blur();
+                });
+            }
+
+            // Input State
+            const keys = {
+                w: false, a: false, s: false, d: false,
+                ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false,
+                " ": false
+            };
+
+            // Resize
+            function resizeGame() {
+                if (!container) return;
+                width = container.offsetWidth;
+                height = container.offsetHeight;
+                canvas.width = width;
+                canvas.height = height;
+            }
+            window.addEventListener('resize', resizeGame);
+            // Initial call
+            setTimeout(resizeGame, 100);
+
+            // Prevent default scroll when game is active or hovered
+            window.addEventListener('keydown', (e) => {
+                if (gameActive && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                    e.preventDefault();
+                }
+
+                if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+                if (e.code === 'Space' && !e.repeat) togglePause();
+            });
+
+            window.addEventListener('keyup', (e) => {
+                if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+            });
+
+            // Touch
+            canvas.addEventListener('touchstart', (e) => {
+                if (!gameActive && !hasWon) {
+                    initGame();
+                }
+            }, { passive: false });
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (gameActive && player) {
+                    const rect = canvas.getBoundingClientRect();
+                    player.x = e.touches[0].clientX - rect.left;
+                    player.y = e.touches[0].clientY - rect.top;
+                }
+            }, { passive: false });
+
+            // Click to Start (Scoped to canvas/container)
+            container.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+
+                if (!gameActive && !hasWon) {
+                    initGame();
+                } else if (gameActive) {
+                    togglePause();
+                }
+            });
+
+            if (continueBtn) {
+                continueBtn.addEventListener('click', () => {
+                    winScreen.style.display = 'none';
+                    gameActive = true;
+                    animate();
+                });
+            }
+
+            // --- CLASSES ---
+            class Player {
+                constructor() {
+                    this.velocity = { x: 0, y: 0 };
+                    this.rotation = 0;
+                    this.opacity = 1;
+                    this.x = width / 2;
+                    this.y = height - 100;
+                    this.radius = 20;
+                    this.speed = 7;
+                    this.lastShot = 0;
+
+                    this.pixelSize = 4;
+                    this.sprite = [
+                        [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+                        [0, 0, 0, 1, 1, 2, 1, 1, 0, 0, 0],
+                        [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+                        [0, 1, 1, 0, 1, 2, 1, 0, 1, 1, 0],
+                        [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+                        [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1]
+                    ];
+                }
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.globalAlpha = this.opacity;
+                    const p = this.pixelSize;
+                    const w = this.sprite[0].length * p;
+                    const h = this.sprite.length * p;
+                    const ox = -w / 2;
+                    const oy = -h / 2;
+                    const colors = { 1: '#ff0033', 2: '#ffffff' };
+
+                    for (let y = 0; y < this.sprite.length; y++) {
+                        for (let x = 0; x < this.sprite[y].length; x++) {
+                            const val = this.sprite[y][x];
+                            if (val !== 0) {
+                                ctx.fillStyle = colors[val] || '#fff';
+                                ctx.fillRect(ox + x * p, oy + y * p, p, p);
+                            }
+                        }
+                    }
+                    if (keys.w || keys.ArrowUp) {
+                        ctx.fillStyle = 'orange';
+                        ctx.fillRect(ox + 5 * p - 2, oy + h, 4, Math.random() * 10 + 5);
+                    }
+                    ctx.restore();
+                }
+                update() {
+                    if (keys.a || keys.ArrowLeft) this.velocity.x = -this.speed;
+                    else if (keys.d || keys.ArrowRight) this.velocity.x = this.speed;
+                    else this.velocity.x = 0;
+
+                    if (keys.w || keys.ArrowUp) this.velocity.y = -this.speed;
+                    else if (keys.s || keys.ArrowDown) this.velocity.y = this.speed;
+                    else this.velocity.y = 0;
+
+                    this.x += this.velocity.x * gameSpeed;
+                    this.y += this.velocity.y * gameSpeed;
+
+                    if (this.x < this.radius) this.x = this.radius;
+                    if (this.x > width - this.radius) this.x = width - this.radius;
+                    if (this.y < this.radius) this.y = this.radius;
+                    if (this.y > height - this.radius) this.y = height - this.radius;
+
+                    if (frames - this.lastShot > (10 / gameSpeed)) {
+                        projectiles.push(new Projectile(this.x, this.y - 20, { x: 0, y: -10 }, '#ff0033', false));
+                        this.lastShot = frames;
+                    }
+                }
+            }
+
+            class Projectile {
+                constructor(x, y, velocity, color, isEnemy) {
+                    this.x = x;
+                    this.y = y;
+                    this.velocity = velocity;
+                    this.width = 4;
+                    this.height = 10;
+                    this.color = color;
+                    this.isEnemy = isEnemy;
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+                }
+                update() {
+                    this.x += this.velocity.x * gameSpeed;
+                    this.y += this.velocity.y * gameSpeed;
+                }
+            }
+
+            class Enemy {
+                constructor() {
+                    this.radius = 20;
+                    this.x = Math.random() * (width - this.radius * 2) + this.radius;
+                    this.y = -this.radius;
+                    this.speed = Math.random() * 2 + 2 + (score * 0.005);
+                    this.velocity = { x: (Math.random() - 0.5) * 1, y: this.speed };
+                    this.pixelSize = 3;
+                    this.sprite = [
+                        [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+                        [0, 0, 0, 1, 1, 2, 1, 1, 0, 0, 0],
+                        [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+                        [0, 1, 1, 0, 1, 2, 1, 0, 1, 1, 0],
+                        [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+                        [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1]
+                    ];
+                }
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(Math.PI);
+                    const p = this.pixelSize;
+                    const w = this.sprite[0].length * p;
+                    const h = this.sprite.length * p;
+                    const ox = -w / 2;
+                    const oy = -h / 2;
+                    const colors = { 1: '#b026ff', 2: '#ffffff' };
+
+                    for (let y = 0; y < this.sprite.length; y++) {
+                        for (let x = 0; x < this.sprite[y].length; x++) {
+                            const val = this.sprite[y][x];
+                            if (val !== 0) {
+                                ctx.fillStyle = colors[val] || '#fff';
+                                ctx.fillRect(ox + x * p, oy + y * p, p, p);
+                            }
+                        }
+                    }
+                    ctx.fillStyle = '#ff00ff';
+                    ctx.fillRect(ox + 5 * p - 1, oy + h, 2, Math.random() * 6 + 2);
+                    ctx.restore();
+                }
+                update() {
+                    this.x += this.velocity.x * gameSpeed;
+                    this.y += this.velocity.y * gameSpeed;
+                    if (this.x < this.radius || this.x > width - this.radius) this.velocity.x *= -1;
+                    if (Math.random() < 0.015 * gameSpeed) {
+                        projectiles.push(new Projectile(this.x, this.y + this.radius, { x: 0, y: 6 }, '#ff00ff', true));
+                    }
+                }
+            }
+
+            class Particle {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.velocity = { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 };
+                    this.radius = Math.random() * 3;
+                    this.color = color;
+                    this.alpha = 1;
+                    this.decay = 0.02 + Math.random() * 0.02;
+                }
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+                update() {
+                    this.x += this.velocity.x * gameSpeed;
+                    this.y += this.velocity.y * gameSpeed;
+                    this.alpha -= this.decay * gameSpeed;
+                }
+            }
+
+            class Star {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.radius = Math.random() * 1.5;
+                    this.speed = Math.random() * 3 + 0.5;
+                    this.opacity = Math.random();
+                }
+                draw() {
+                    ctx.fillStyle = `rgba(50, 50, 50, ${this.opacity})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                update() {
+                    this.y += this.speed * gameSpeed;
+                    if (this.y > height) {
+                        this.y = 0;
+                        this.x = Math.random() * width;
+                    }
+                }
+            }
+
+            // --- GAME VARIABLES & FUNCTIONS ---
+            let player;
+            let projectiles = [];
+            let enemies = [];
+            let particles = [];
+            let stars = [];
+
+            function initGame() {
+                gameActive = true;
+                gameOver = false;
+                isPaused = false;
+                hasWon = false;
+                score = 0;
+                if (scoreEl) scoreEl.textContent = score;
+                frames = 0;
+                player = new Player();
+                projectiles = [];
+                enemies = [];
+                particles = [];
+                if (stars.length === 0) {
+                    for (let i = 0; i < 100; i++) stars.push(new Star());
+                }
+                animate();
+            }
+
+            function spawnEnemies() {
+                let spawnRate = Math.floor(60 / gameSpeed);
+                if (frames % spawnRate === 0) enemies.push(new Enemy());
+            }
+
+            function createExplosion(x, y, color) {
+                for (let i = 0; i < 15; i++) particles.push(new Particle(x, y, color));
+            }
+
+            function togglePause() {
+                if (!gameActive) return;
+                isPaused = !isPaused;
+                if (isPaused) {
+                    cancelAnimationFrame(animationId);
+                    drawPauseScreen();
+                } else {
+                    animate();
+                }
+            }
+
+            function drawPauseScreen() {
+                ctx.save();
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.font = '40px Courier New';
+                ctx.fillText('PAUSED', width / 2, height / 2);
+                ctx.restore();
+            }
+
+            function endGame() {
+                gameActive = false;
+                gameOver = true;
+                createExplosion(player.x, player.y, '#ff0033');
+                cancelAnimationFrame(animationId);
+                drawGameOverScreen();
+            }
+
+            function drawStartScreen() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, width, height);
+                ctx.textAlign = 'center';
+                ctx.save();
+                ctx.fillStyle = '#ff0033';
+                ctx.font = 'bold 50px Courier New';
+                ctx.fillText('SPACE SHOOTER', width / 2, height / 2 - 50);
+                ctx.restore();
+                ctx.fillStyle = '#fff';
+                ctx.font = '20px Courier New';
+                ctx.fillText('Click to Start', width / 2, height / 2 + 10);
+                ctx.font = '16px Courier New';
+                ctx.fillStyle = '#aaa';
+                ctx.fillText('WASD / Arrows to Move', width / 2, height / 2 + 50);
+                ctx.fillText('Auto-Fire Enabled', width / 2, height / 2 + 80);
+            }
+
+            function drawGameOverScreen() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = '#ff3333';
+                ctx.textAlign = 'center';
+                ctx.font = '50px Courier New';
+                ctx.fillText('GAME OVER', width / 2, height / 2 - 50);
+                ctx.fillStyle = '#fff';
+                ctx.font = '30px Courier New';
+                ctx.fillText('Score: ' + score, width / 2, height / 2 + 10);
+                ctx.font = '20px Courier New';
+                ctx.fillText('Click to Restart', width / 2, height / 2 + 60);
+            }
+
+            function animate() {
+                if (!gameActive) return;
+                if (score >= 2500 && !hasWon) {
+                    triggerWin();
+                    return;
+                }
+                animationId = requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, width, height);
+
+                stars.forEach(star => { star.update(); star.draw(); });
+                player.update();
+                player.draw();
+
+                particles.forEach((particle, index) => {
+                    if (particle.alpha <= 0) particles.splice(index, 1);
+                    else { particle.update(); particle.draw(); }
+                });
+
+                projectiles.forEach((projectile, index) => {
+                    projectile.update();
+                    projectile.draw();
+                    if (projectile.y < 0 || projectile.y > height) {
+                        setTimeout(() => projectiles.splice(index, 1), 0);
+                        return;
+                    }
+                    if (projectile.isEnemy) {
+                        const dist = Math.hypot(projectile.x - player.x, projectile.y - player.y);
+                        if (dist < player.radius + projectile.width) endGame();
+                    } else {
+                        enemies.forEach((enemy, eIndex) => {
+                            const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
+                            if (dist < enemy.radius + projectile.width) {
+                                createExplosion(enemy.x, enemy.y, '#ff00ff');
+                                score += 100;
+                                if (scoreEl) scoreEl.textContent = score;
+                                setTimeout(() => {
+                                    enemies.splice(eIndex, 1);
+                                    projectiles.splice(index, 1);
+                                }, 0);
+                            }
+                        });
+                    }
+                });
+
+                enemies.forEach((enemy, index) => {
+                    enemy.update();
+                    enemy.draw();
+                    const distPlayer = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+                    if (distPlayer - enemy.radius - player.radius < 1) {
+                        createExplosion(enemy.x, enemy.y, '#ff00ff');
+                        endGame();
+                    }
+                    if (enemy.y - enemy.radius > height) {
+                        setTimeout(() => enemies.splice(index, 1), 0);
+                    }
+                });
+
+                spawnEnemies();
+                frames++;
+            }
+
+            function triggerWin() {
+                hasWon = true;
+                gameActive = false;
+                cancelAnimationFrame(animationId);
+                if (winScreen) winScreen.style.display = 'flex';
+            }
+
+            // Init Background
+            resizeGame();
+            for (let i = 0; i < 100; i++) stars.push(new Star());
+
+            function loop() {
+                if (gameActive) return;
+                requestAnimationFrame(loop);
+                // Matches the background provided in user snippet
+                ctx.fillStyle = '#E0DCDC';
+                ctx.fillRect(0, 0, width, height);
+                stars.forEach(star => { star.update(); star.draw(); });
+                if (gameOver) drawGameOverScreen();
+                else drawStartScreen();
+            }
+            loop();
+        }
+
+        //new code
+
+
+        // const form = document.getElementById('contact-form-submit');
+        // const btn = document.getElementById('form-btn');
+        // // Store original button text so we can revert back exactly
+        // const originalBtnText = btn ? btn.innerText : 'SUBMIT INQUIRY';
+
+        // if(form && btn) {
+        //     form.addEventListener('submit', function(e) {
+        //         e.preventDefault(); // Stop page reload
+
+        //         // 1. Show SENDING State
+        //         btn.innerText = 'SENDING...';
+        //         btn.style.opacity = '0.7';
+        //         btn.style.cursor = 'wait';
+        //         btn.disabled = true;
+
+        //         // 2. Prepare Data
+        //         const formData = new FormData(form);
+
+        //         // 3. Send Data via AJAX (Using the /ajax/ URL to prevent errors)
+        //         fetch("https://formsubmit.co/ajax/info@pickd.in", {
+        //             method: "POST",
+        //             headers: { 
+        //                 'Content-Type': 'application/json',
+        //                 'Accept': 'application/json'
+        //             },
+        //             body: JSON.stringify(Object.fromEntries(formData))
+        //         })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             // 4. Show SUBMITTED State (Black Button)
+        //             btn.innerText = 'SUBMITTED';
+        //             btn.style.backgroundColor = '#000000'; // Black
+        //             btn.style.color = '#ffffff'; // White
+        //             btn.style.opacity = '1';
+        //             btn.style.cursor = 'default';
+
+        //             // Clear the form fields immediately
+        //             form.reset();
+
+        //             // 5. RESET Button back to Default after 3 Seconds
+        //             setTimeout(() => {
+        //                 btn.innerText = originalBtnText; // Back to "SUBMIT INQUIRY"
+        //                 btn.style.backgroundColor = '';  // Revert to original CSS (Red)
+        //                 btn.style.color = '';            // Revert to original CSS (White)
+        //                 btn.style.cursor = 'pointer';
+        //                 btn.disabled = false;            // Make clickable again
+        //             }, 3000);
+        //         })
+        //         .catch(error => {
+        //             console.log(error);
+        //             alert('Something went wrong. Please check your connection.');
+        //             // Reset immediately on error
+        //             btn.innerText = originalBtnText;
+        //             btn.style.opacity = '1';
+        //             btn.style.cursor = 'pointer';
+        //             btn.disabled = false;
+        //         });
+        //     });
+        // }
+
+
+        //google web app code
+
+        // const form = document.getElementById('contact-form-submit');
+        // const btn = document.getElementById('form-btn');
+        // const originalBtnText = btn ? btn.innerText : 'SUBMIT INQUIRY';
+
+        // if(form && btn) {
+        //     form.addEventListener('submit', function(e) {
+        //         e.preventDefault(); // Stop page reload
+
+        //         // 1. Show LOADING State
+        //         btn.innerText = 'SENDING...';
+        //         btn.style.opacity = '0.7';
+        //         btn.style.cursor = 'wait';
+        //         btn.disabled = true;
+
+        //         // 2. Prepare Data
+        //         const formData = new FormData(form);
+        //         const data = Object.fromEntries(formData);
+
+        //         // 3. Send to Google Script
+        //         // We use 'no-cors' because Google Scripts require it for security from external sites
+        //         fetch(form.action, {
+        //             method: "POST",
+        //             mode: "no-cors", 
+        //             headers: {
+        //                 "Content-Type": "application/json"
+        //             },
+        //             body: JSON.stringify(data)
+        //         })
+        //         .then(() => {
+        //             // 4. Success State (Black Button)
+        //             // With 'no-cors', we don't get a JSON response, so we assume success if no network error.
+        //             btn.innerText = 'SUBMITTED';
+        //             btn.style.backgroundColor = '#000000'; // Black
+        //             btn.style.color = '#ffffff'; // White
+        //             btn.style.opacity = '1';
+        //             btn.style.cursor = 'default';
+
+        //             form.reset();
+
+        //             // 5. Reset Button after 3 seconds
+        //             setTimeout(() => {
+        //                 btn.innerText = originalBtnText;
+        //                 btn.style.backgroundColor = ''; // Revert to Red
+        //                 btn.style.color = ''; 
+        //                 btn.style.cursor = 'pointer';
+        //                 btn.disabled = false;
+        //             }, 3000);
+        //         })
+        //         .catch(error => {
+        //             console.error('Error:', error);
+        //             alert('Something went wrong. Please check your internet.');
+        //             btn.innerText = originalBtnText;
+        //             btn.disabled = false;
+        //         });
+        //     });
+        // }
+
+        const form = document.getElementById('contact-form-submit');
+        const btn = document.getElementById('form-btn');
+        const originalBtnText = btn ? btn.innerText : 'SUBMIT INQUIRY';
+
+        if (form && btn) {
+
+            /* ✅ SAFER CHANGE: lock minimum width only */
+            const minBtnWidth = btn.offsetWidth;
+            btn.style.minWidth = minBtnWidth + 'px';
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                btn.innerText = 'SENDING...';
+                btn.style.opacity = '0.7';
+                btn.style.cursor = 'wait';
+                btn.disabled = true;
+
+                const formData = new FormData(form);
+                const data = new URLSearchParams();
+
+                for (const pair of formData) {
+                    data.append(pair[0], pair[1]);
+                }
+
+                fetch(form.action, {
+                    method: "POST",
+                    mode: "no-cors",
+                    body: data
+                })
+                    .then(() => {
+                        btn.innerText = 'SUBMITTED';
+                        btn.style.backgroundColor = '#000000';
+                        btn.style.color = '#ffffff';
+                        btn.style.cursor = 'default';
+
+                        form.reset();
+
+                        setTimeout(() => {
+                            btn.innerText = originalBtnText;
+                            btn.style.backgroundColor = '#FE3634';
+                            btn.style.color = '#ffffff';
+                            btn.style.cursor = 'pointer';
+                            btn.disabled = false;
+                        }, 3000);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        btn.innerText = originalBtnText;
+                        btn.disabled = false;
+                        alert('Something went wrong. Please check your connection.');
+                    });
+            });
+        }
+
+
+        //     const form = document.querySelector("form");
+        // const btn = document.getElementById("form-btn");
+        // const text = btn.querySelector(".btn-text");
+        // const loader = btn.querySelector(".btn-loader");
+
+        // form.addEventListener("submit", (e)=>{
+        //   e.preventDefault();
+
+        //   btn.disabled = true;
+        
