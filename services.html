@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PICKD</title>
+    <link rel="icon" type="image/png" href="plogo.png">
+    <script>try{var _t=localStorage.getItem('pickd-theme');if(_t){document.documentElement.setAttribute('data-theme',_t);}}catch(e){}</script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+
+    <!-- Loading Screen -->
+    <!-- <div class="loader" id="loader">
+        <h1 class="text-6xl md:text-9xl font-extrabold text-white display-font">PICKD</h1>
+    </div> -->
+
+    <!-- Noise Texture -->
+    <div class="noise-overlay"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
+
+    <!-- Navigation -->
+    <nav
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 pt-6 pb-3 md:px-12 text-theme-main bg-nav">
+        <a href="#" onclick="navigateTo('home'); return false;"
+            class="text-2xl font-bold tracking-[0.12em] hoverable font-cardo transition-colors duration-300 hover:text-[#FF3131]"
+            data-cursor="logo">PICKD</a>
+
+        <div class="hidden md:flex items-center gap-10 font-medium text-sm uppercase tracking-widest">
+            <a id="nav-work" onclick="navigateTo('work'); return false;" class="nav-link hoverable">Work</a>
+            <a id="nav-services" onclick="navigateTo('services'); return false;" class="nav-link hoverable">Services</a>
+            <a id="nav-about" onclick="navigateTo('about'); return false;" class="nav-link hoverable">About</a>
+            <a id="nav-playground" onclick="navigateTo('home', 'playground'); return false;"
+                class="nav-link hoverable">Playground</a>
+            <a id="nav-contact" onclick="navigateTo('contact'); return false;"
+                class="nav-link hoverable text-[#FF3131]">Let's Talk</a>
+
+            <!-- Theme Toggle -->
+            <button onclick="toggleTheme()"
+                class="hoverable ml-4 border border-theme px-3 py-1 rounded-full text-xs hover:border-[#FF3131] hover:text-[#FF3131] transition-colors"
+                id="themeBtn">
+                Mode: Light
+            </button>
+        </div>
+
+        <button class="md:hidden text-2xl hoverable" id="menuBtn">☰</button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed inset-0 bg-theme-main z-40 flex flex-col justify-center items-center gap-8 text-4xl display-font font-bold"
+        id="mobileMenu">
+        <button class="absolute top-6 right-6 text-theme-main text-4xl hoverable" id="closeMenuBtn">×</button>
+        <a onclick="navigateTo('work'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Work</a>
+        <a onclick="navigateTo('services'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Services</a>
+        <a onclick="navigateTo('about'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">About</a>
+        <a onclick="navigateTo('home', 'playground'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Playground</a>
+        <a onclick="navigateTo('contact'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Contact</a>
+        <button onclick="toggleTheme(); toggleMenu();"
+            class="text-lg mt-8 text-theme-muted uppercase tracking-widest hover:text-[#FF3131]">Switch Theme</button>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <div id="main-container">
+
+<div id="view-services" class="view-section min-h-screen bg-theme-main">
+            <!-- Services Hero -->
+            <section class="pt-40 pb-20 px-6 md:px-12 border-b border-theme">
+                <h1 class="display-font text-[12vw] leading-[0.85] font-bold text-theme-main uppercase">
+                    Services
+                </h1>
+                <div class="flex flex-col md:flex-row justify-left-end mt-12">
+                    <p class="text-[#FF3131] uppercase tracking-widest"></p>
+                    <p class="max-w-5xl text-theme-muted text-lg md:text-xl leading-relaxed">
+                        Branding. Strategy. Technology. Designed to work together — not in silos.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Detailed Services List -->
+            <section class="px-6 md:px-12 py-20">
+                <!-- Item 1 -->
+                <div class="service-row border-b border-theme py-16 group hoverable cursor-pointer"
+                    onclick="navigateTo('work', 'branding')">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <h2
+                            class="text-4xl md:text-6xl font-bold display-font text-theme-main group-hover:text-[#FF3131] transition-colors duration-300">
+                            BRANDING & DESIGN</h2>
+                        <span class="text-theme-muted text-sm uppercase tracking-widest mt-4 md:mt-0">01</span>
+                    </div>
+                    <div
+                        class="mt-8 md:pl-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-theme-muted text-sm uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
+                        <p>UI/UX and Brand Identitiy System</p>
+                        <p>Visual language & design direction</p>
+                        <p>Packaging and experience design</p>
+                    </div>
+                </div>
+                <!-- Item 2 -->
+                <div class="service-row border-b border-theme py-16 group hoverable cursor-pointer"
+                    onclick="navigateTo('work', 'marketing')">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <h2
+                            class="text-4xl md:text-6xl font-bold display-font text-theme-main group-hover:text-[#FF3131] transition-colors duration-300">
+                            MARKETING & ADVERTISING</h2>
+                        <span class="text-theme-muted text-sm uppercase tracking-widest mt-4 md:mt-0">02</span>
+                    </div>
+                    <div
+                        class="mt-8 md:pl-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-theme-muted text-sm uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
+                        <p>Strategic campaign planning</p>
+                        <p>Digital and Social Marketing</p>
+                        <p>Performance-driven storytelling</p>
+                    </div>
+                </div>
+                <!-- Item 3 -->
+                <div class="service-row border-b border-theme py-16 group hoverable cursor-pointer"
+                    onclick="navigateTo('work', 'copywriting')">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <h2
+                            class="text-4xl md:text-6xl font-bold display-font text-theme-main group-hover:text-[#FF3131] transition-colors duration-300">
+                            COPYWRITING & CONTENT</h2>
+                        <span class="text-theme-muted text-sm uppercase tracking-widest mt-4 md:mt-0">03</span>
+                    </div>
+                    <div
+                        class="mt-8 md:pl-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-theme-muted text-sm uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
+                        <p>Brand storytelling</p>
+                        <p>Website and campaign copy</p>
+                        <p>Advertisement Screen Writing</p>
+                    </div>
+                </div>
+                <!-- Item 4 -->
+                <div class="service-row border-b border-theme py-16 group hoverable cursor-pointer"
+                    onclick="navigateTo('work', 'tech')">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <h2
+                            class="text-4xl md:text-6xl font-bold display-font text-theme-main group-hover:text-[#FF3131] transition-colors duration-300">
+                            AUTOMATION & TECHNOLOGY</h2>
+                        <span class="text-theme-muted text-sm uppercase tracking-widest mt-4 md:mt-0">04</span>
+                    </div>
+                    <div
+                        class="mt-8 md:pl-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-theme-muted text-sm uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity">
+                        <p>Websites and digital platforms</p>
+                        <p>Smart workflows and automation</p>
+                        <p>Operational Strategy Integrations</p>
+                    </div>fP
+                </div>
+            </section>
+
+            <!-- Services Footer -->
+            <div class="py-6 px-6 md:px-12 border-t border-theme bg-theme-main">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-center text-xs text-theme-muted uppercase tracking-widest">
+                    <span>© 2024 PICKD. Agency</span>
+                    <div class="flex gap-6 mt-4 md:mt-0">
+                        <a href="https://www.instagram.com/pickd.in/" target="_blank"
+                            class="hover:text-[#FF3131]">Instagram</a>
+                        <a href="#" class="hover:text-[#FF3131]">Twitter</a>
+                        <a href="mailto:info@pickd.in class=" hover:text-[#FF3131]">Email</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- End Main Container -->
+
+    <script src="script.js"></script>
+</body>
+
+</html>

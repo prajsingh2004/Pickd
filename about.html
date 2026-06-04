@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PICKD</title>
+    <link rel="icon" type="image/png" href="plogo.png">
+    <script>try{var _t=localStorage.getItem('pickd-theme');if(_t){document.documentElement.setAttribute('data-theme',_t);}}catch(e){}</script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+
+    <!-- Loading Screen -->
+    <!-- <div class="loader" id="loader">
+        <h1 class="text-6xl md:text-9xl font-extrabold text-white display-font">PICKD</h1>
+    </div> -->
+
+    <!-- Noise Texture -->
+    <div class="noise-overlay"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
+
+    <!-- Navigation -->
+    <nav
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 pt-6 pb-3 md:px-12 text-theme-main bg-nav">
+        <a href="#" onclick="navigateTo('home'); return false;"
+            class="text-2xl font-bold tracking-[0.12em] hoverable font-cardo transition-colors duration-300 hover:text-[#FF3131]"
+            data-cursor="logo">PICKD</a>
+
+        <div class="hidden md:flex items-center gap-10 font-medium text-sm uppercase tracking-widest">
+            <a id="nav-work" onclick="navigateTo('work'); return false;" class="nav-link hoverable">Work</a>
+            <a id="nav-services" onclick="navigateTo('services'); return false;" class="nav-link hoverable">Services</a>
+            <a id="nav-about" onclick="navigateTo('about'); return false;" class="nav-link hoverable">About</a>
+            <a id="nav-playground" onclick="navigateTo('home', 'playground'); return false;"
+                class="nav-link hoverable">Playground</a>
+            <a id="nav-contact" onclick="navigateTo('contact'); return false;"
+                class="nav-link hoverable text-[#FF3131]">Let's Talk</a>
+
+            <!-- Theme Toggle -->
+            <button onclick="toggleTheme()"
+                class="hoverable ml-4 border border-theme px-3 py-1 rounded-full text-xs hover:border-[#FF3131] hover:text-[#FF3131] transition-colors"
+                id="themeBtn">
+                Mode: Light
+            </button>
+        </div>
+
+        <button class="md:hidden text-2xl hoverable" id="menuBtn">☰</button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed inset-0 bg-theme-main z-40 flex flex-col justify-center items-center gap-8 text-4xl display-font font-bold"
+        id="mobileMenu">
+        <button class="absolute top-6 right-6 text-theme-main text-4xl hoverable" id="closeMenuBtn">×</button>
+        <a onclick="navigateTo('work'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Work</a>
+        <a onclick="navigateTo('services'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Services</a>
+        <a onclick="navigateTo('about'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">About</a>
+        <a onclick="navigateTo('home', 'playground'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Playground</a>
+        <a onclick="navigateTo('contact'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Contact</a>
+        <button onclick="toggleTheme(); toggleMenu();"
+            class="text-lg mt-8 text-theme-muted uppercase tracking-widest hover:text-[#FF3131]">Switch Theme</button>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <div id="main-container">
+
+<div id="view-about" class="view-section min-h-screen bg-theme-main">
+            <!-- Background Blob -->
+            <div
+                class="absolute top-0 right-0 w-[60vw] h-[60vw] bg-[#FF3131] rounded-full blur-[200px] opacity-20 pointer-events-none mix-blend-multiply">
+            </div>
+
+            <!-- About Hero / Manifesto -->
+            <section class="pt-40 pb-12 px-6 md:px-12 max-w-7xl mx-auto z-10 relative">
+                <p class="text-sm font-bold mb-8 text-[#FF3131] uppercase tracking-wider">Where it all began</p>
+                <h3
+                    class="text-4xl md:text-8xl leading-[1.0] font-bold display-font mb-16 text-theme-main mix-blend-exclusion">
+                    <span class="scramble-text inline-block" data-value="Quiet Confidence.">Quiet
+                        Confidence..</span><br>
+                    <span class="scramble-text text-[#FF3131] inline-block" data-value="Clear Intent.">Clear
+                        Intent.</span>
+                </h3>
+                <div class="grid md:grid-cols-2 gap-16 text-lg md:text-xl leading-relaxed font-medium">
+                    <p class="reveal-paragraph opacity-0 translate-y-4 text-theme-main">
+                        In a world competing for attention, we believe in slowing down —
+                        listening carefully, thinking deeply, and designing with intention.
+
+                    </p>
+                    <p class="reveal-paragraph opacity-0 translate-y-4 text-theme-main">
+                        Our work is not about being loud.
+                        It’s about being remembered. Our approach blends creativity, clarity, and long-term thinking —
+                        allowing brands to grow with confidence.
+                    </p>
+                </div>
+            </section>
+
+            <!-- NEW SECTION: The Thought Behind PICKD (Replaces Protocol) -->
+            <section class="py-20 px-6 md:px-12 border-t border-theme">
+                <div class="max-w-7xl mx-auto">
+                    <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+                        <h2 class="text-4xl md:text-6xl font-bold display-font text-theme-main">The Thought Behind <span
+                                class="text-[#FF3131]">PICKD</span></h2>
+                    </div>
+
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-12 text-lg md:text-xl leading-relaxed text-theme-muted">
+                        <div>
+                            <p class="mb-8 text-theme-main font-medium">
+                                PICKD was born from a simple realization: most brands don’t fail because they lack
+                                talent or ambition.
+                                <span class="text-[#FF3131]">They fail because their story is never truly
+                                    understood.</span>
+                            </p>
+                            <p>
+                                We began as a small collective of designers, strategists, and thinkers who believed that
+                                great brands are built at the intersection of clarity, intention, and emotion.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="mb-8">
+                                What started as conversations and late-night explorations slowly became a way of working
+                                — one rooted in listening first, designing second, and building with purpose.
+                            </p>
+                            <p class="text-theme-main font-medium">
+                                Today, PICKD exists to help brands grow with meaning, not noise. To create identities
+                                that feel considered, confident, and unmistakably their own.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- The Collective (Team) -->
+            <section class="py-20 px-6 md:px-12 bg-theme-secondary text-theme-main">
+                <div class="max-w-7xl mx-auto">
+                    <h2 class="text-4xl md:text-6xl font-bold display-font mb-6">THE COLLECTIVE</h2>
+                    <p class="text-theme-muted max-w-2xl text-lg mb-16">Built by people who care about the
+                        details.<br>Shaped through collaboration.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Profile 1: Founder -->
+                        <div class="collective-card group relative h-96 overflow-hidden cursor-pointer border border-theme"
+                            data-cursor="big">
+                            <img src="prof_women.webp"
+                                class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90">
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-8">
+                                <h4 class="text-3xl font-bold display-font text-white mb-1">JAANSI RAJ</h4>
+                                <p class="text-[#FF3131] text-xs uppercase tracking-widest mb-2">Role: Founder & CEO</p>
+                                <p
+                                    class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                    Orchestrating the chaos. Defining the vision.</p>
+                            </div>
+                        </div>
+
+                        <!-- Profile 2: Co-Founder -->
+                        <div class="collective-card group relative h-96 overflow-hidden cursor-pointer border border-theme"
+                            data-cursor="big">
+                            <img src="prof_men.webp"
+                                class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90">
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-8">
+                                <h4 class="text-3xl font-bold display-font text-white mb-1">PRIYESH MISHRA</h4>
+                                <p class="text-[#FF3131] text-xs uppercase tracking-widest mb-2">Role: Founder &
+                                    Creative Head</p>
+                                <p
+                                    class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                    Building the structure. Breaking boundaries.</p>
+                            </div>
+                        </div>
+
+                        <!-- Profile 3: Design Manager -->
+                        <div class="collective-card group relative h-96 overflow-hidden cursor-pointer border border-theme"
+                            data-cursor="big">
+                            <img src="prof_men.webp" w-full h-full object-cover filter grayscale group-hover:grayscale-0
+                                transition-all duration-500 scale-100 group-hover:scale-105">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90">
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-8">
+                                <h4 class="text-3xl font-bold display-font text-white mb-1">PRAJ SINGH</h4>
+                                <p class="text-[#FF3131] text-xs uppercase tracking-widest mb-2">Role: Design Lead</p>
+                                <p
+                                    class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                    Curating the aesthetics, keeping functionality first.</p>
+                            </div>
+
+                        </div>
+
+                        <!-- Profile 4: Employee -->
+                        <!-- <div class="collective-card group relative h-96 overflow-hidden cursor-pointer border border-theme" data-cursor="big">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                            <div class="absolute bottom-0 left-0 w-full p-8">
+                                <h4 class="text-3xl font-bold display-font text-white mb-1">THE OPERATIVE</h4>
+                                <p class="text-[#FF3131] text-xs uppercase tracking-widest mb-2">Role: Senior Developer</p>
+                                <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">In the machine. Executing the code.</p>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- NEW SECTION: FUTURE SCOPE -->
+            <section class="py-20 px-6 md:px-12 bg-theme-main text-theme-main border-t border-theme">
+                <div class="max-w-7xl mx-auto">
+                    <div class="flex flex-col md:flex-row justify-between items-start mb-16">
+                        <div>
+                            <p class="text-[#FF3131] uppercase tracking-widest text-sm mb-4">Our Capabilities</p>
+                            <h2 class="text-4xl md:text-7xl font-bold display-font leading-none">Everything Works
+                                Better<br>When It Works Together</h2>
+                        </div>
+                        <p class="max-w-md text-lg font-medium mt-8 md:mt-0">
+                            We bring strategy, creativity, and technology into one seamless ecosystem — so brands don’t
+                            just look good, they grow with purpose.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
+                        <div class="group cursor-default hoverable">
+                            <h3
+                                class="text-2xl font-bold display-font mb-4 group-hover:text-[#FF3131] transition-colors">
+                                SYSTEM-FIRST CREATIVITY</h3>
+                            <p class="text-theme-muted text-sm leading-relaxed mb-4">
+                                We build flexible brand systems where design, content, and campaigns grow and improve
+                                over time without losing what makes the brand unique.
+                            </p>
+                            <div class="h-[1px] w-full bg-theme-secondary group-hover:bg-[#FF3131] transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="group cursor-default hoverable">
+                            <h3
+                                class="text-2xl font-bold display-font mb-4 group-hover:text-[#FF3131] transition-colors">
+                                AUTOMATION AS A CREATIVE FORCE</h3>
+                            <p class="text-theme-muted text-sm leading-relaxed mb-4">
+                                From trigger-based storytelling to self-running marketing workflows, we’re turning
+                                repetitive effort into autonomous growth loops.
+                            </p>
+                            <div class="h-[1px] w-full bg-theme-secondary group-hover:bg-[#FF3131] transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="group cursor-default hoverable">
+                            <h3
+                                class="text-2xl font-bold display-font mb-4 group-hover:text-[#FF3131] transition-colors">
+                                PLATFORM-AGNOSTIC BRANDS</h3>
+                            <p class="text-theme-muted text-sm leading-relaxed mb-4">
+                                We’re designing identities and content ecosystems that survive algorithm shifts, channel
+                                fatigue, and format decay built to exist anywhere.
+                            </p>
+                            <div class="h-[1px] w-full bg-theme-secondary group-hover:bg-[#FF3131] transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="group cursor-default hoverable">
+                            <h3
+                                class="text-2xl font-bold display-font mb-4 group-hover:text-[#FF3131] transition-colors">
+                                SYNTHETIC SPEED</h3>
+                            <p class="text-theme-muted text-sm leading-relaxed mb-4">
+                                We’re exploring rapid-production pipelines where ideas move from concept to execution at
+                                system speed without sacrificing quality or intent.
+                            </p>
+                            <div class="h-[1px] w-full bg-theme-secondary group-hover:bg-[#FF3131] transition-colors">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Footer -->
+            <div class="py-6 px-6 md:px-12 border-t border-theme bg-theme-main">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-center text-xs text-theme-muted uppercase tracking-widest">
+                    <span>© 2024 PICKD. Agency</span>
+                    <div class="flex gap-6 mt-4 md:mt-0">
+                        <a href="https://www.instagram.com/pickd.in/" target="_blank"
+                            class="hover:text-[#FF3131]">Instagram</a>
+                        <a href="#" class="hover:text-[#FF3131]">Twitter</a>
+                        <a href="mailto:info@pickd.in" class="hover:text-[#FF3131]">Email</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- End Main Container -->
+
+    <script src="script.js"></script>
+</body>
+
+</html>

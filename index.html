@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PICKD</title>
+    <link rel="icon" type="image/png" href="plogo.png">
+    <script>try{var _t=localStorage.getItem('pickd-theme');if(_t){document.documentElement.setAttribute('data-theme',_t);}}catch(e){}</script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+
+    <!-- Loading Screen -->
+    <!-- <div class="loader" id="loader">
+        <h1 class="text-6xl md:text-9xl font-extrabold text-white display-font">PICKD</h1>
+    </div> -->
+
+    <!-- Noise Texture -->
+    <div class="noise-overlay"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
+
+    <!-- Navigation -->
+    <nav
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 pt-6 pb-3 md:px-12 text-theme-main bg-nav">
+        <a href="#" onclick="navigateTo('home'); return false;"
+            class="text-2xl font-bold tracking-[0.12em] hoverable font-cardo transition-colors duration-300 hover:text-[#FF3131]"
+            data-cursor="logo">PICKD</a>
+
+        <div class="hidden md:flex items-center gap-10 font-medium text-sm uppercase tracking-widest">
+            <a id="nav-work" onclick="navigateTo('work'); return false;" class="nav-link hoverable">Work</a>
+            <a id="nav-services" onclick="navigateTo('services'); return false;" class="nav-link hoverable">Services</a>
+            <a id="nav-about" onclick="navigateTo('about'); return false;" class="nav-link hoverable">About</a>
+            <a id="nav-playground" onclick="navigateTo('home', 'playground'); return false;"
+                class="nav-link hoverable">Playground</a>
+            <a id="nav-contact" onclick="navigateTo('contact'); return false;"
+                class="nav-link hoverable text-[#FF3131]">Let's Talk</a>
+
+            <!-- Theme Toggle -->
+            <button onclick="toggleTheme()"
+                class="hoverable ml-4 border border-theme px-3 py-1 rounded-full text-xs hover:border-[#FF3131] hover:text-[#FF3131] transition-colors"
+                id="themeBtn">
+                Mode: Light
+            </button>
+        </div>
+
+        <button class="md:hidden text-2xl hoverable" id="menuBtn">☰</button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed inset-0 bg-theme-main z-40 flex flex-col justify-center items-center gap-8 text-4xl display-font font-bold"
+        id="mobileMenu">
+        <button class="absolute top-6 right-6 text-theme-main text-4xl hoverable" id="closeMenuBtn">×</button>
+        <a onclick="navigateTo('work'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Work</a>
+        <a onclick="navigateTo('services'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Services</a>
+        <a onclick="navigateTo('about'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">About</a>
+        <a onclick="navigateTo('home', 'playground'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Playground</a>
+        <a onclick="navigateTo('contact'); toggleMenu(); return false;"
+            class="hover:text-[#FF3131] transition-colors">Contact</a>
+        <button onclick="toggleTheme(); toggleMenu();"
+            class="text-lg mt-8 text-theme-muted uppercase tracking-widest hover:text-[#FF3131]">Switch Theme</button>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <div id="main-container">
+
+<div id="view-home" class="view-section">
+            <!-- Hero Section -->
+            <section class="h-screen w-full flex flex-col justify-center items-center relative overflow-hidden px-4">
+                <div class="absolute inset-0 opacity-20 pointer-events-none">
+                    <div
+                        class="absolute top-1/4 left-1/4 w-64 h-64 bg-[#FF3131] rounded-full blur-[100px] animate-pulse">
+                    </div>
+                    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-900 rounded-full blur-[120px]"></div>
+                </div>
+
+                <div class="z-10 text-center mix-blend-normal">
+                    <p
+                        class="text-[#FF3131] uppercase tracking-[0.3em] text-sm md:text-base mb-4 font-bold animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                        Beyond the Obvious</p>
+                    <h1 class="display-font text-[15vw] leading-[0.8] font-extrabold tracking-tighter hoverable"
+                        data-cursor="big">
+                        WE ARE <br>
+                        <span class="text-theme-main hover:text-[#FF3131] transition-colors duration-500">PICKD</span>
+                    </h1>
+                </div>
+
+                <div
+                    class="absolute bottom-10 left-6 md:left-12 flex items-center gap-4 text-xs md:text-sm uppercase tracking-widest text-theme-muted">
+                    <div class="w-2 h-2 bg-[#FF3131] rounded-full animate-ping"></div>
+                    <span>Scroll to see it unfold</span>
+                </div>
+            </section>
+
+            <!-- Marquee / Statement -->
+            <section class="py-8 bg-[#FF3131] text-black border-y border-black overflow-hidden">
+                <div class="marquee-container">
+                    <div class="marquee-content display-font text-6xl md:text-8xl font-black uppercase">
+                        &nbsp;Congratulations You've been pickd! Congratulations You've been pickd!
+                        &nbsp;Congratulations You've been picked! Congratulations You've been pickd!
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: WORK PREVIEW (Selected Chaos) -->
+            <section id="work-preview" class="py-32 px-6 md:px-12 relative border-b border-theme">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+                    <div>
+                        <h2 class="text-5xl md:text-7xl font-bold display-font"><span
+                                class="text-[#FF3131]">Featured</span> Work</h2>
+                        <p class="text-[#FF3131] uppercase tracking-widest mt-4 text-sm">[ Selected Works 2024-2025 ]
+                        </p>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <p class="max-w-md text-theme-muted mt-6 md:mt-0 text-lg text-right mb-4">
+                            Every project we take on is shaped by intent — never templates.
+                        </p>
+                        <!-- Updated border color to neon red -->
+                        <button onclick="navigateTo('work');"
+                            class="text-theme-main border border-[#FF3131] px-6 py-2 rounded-none uppercase text-xs tracking-widest hover:bg-[#FF3131] hover:border-[#FF3131] transition-all hoverable">View
+                            Full Archive</button>
+                    </div>
+                </div>
+
+                <!-- Horizontal Draggable/Scrollable Area -->
+                <div class="flex overflow-x-auto gap-8 pb-4 snap-x snap-mandatory cursor-grab active:cursor-grabbing hide-scrollbar"
+                    id="work-slider">
+
+                    <!-- Project 1: SAB Marine -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="sab 2.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="SAB Marine">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">SAB MARINE</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Identity /
+                                Dining</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 2: Daily Daisy -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="Daily Daisy 12.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Daily Daisy">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">DAILY DAISY</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Skincare
+                                Branding</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 3: Smart Medic -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="smart 0.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Smart Medic">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">SMART MEDIC</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Healthcare
+                                UI/UX</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 4: UpandUp.life -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="upandup 4.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="UpandUp">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">UPANDUP.LIFE</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Workforce
+                                Intelligence</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 5: Learnix -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1000&auto=format&fit=crop"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Learnix">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">LEARNIX</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">EdTech
+                                Platform</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 6: Smart Chair -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="chair thumbnail.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Smart Chair">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">SMART CHAIR</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Product
+                                Tech</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 7: Nivia -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="nivia 0.2.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Nivia">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">NIVIA</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Sports
+                                Marketing</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 8: The Canteen -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="cant 13.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="The Canteen">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">THE CANTEEN</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">Branding /
+                                Space</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 9: Anjani Gram -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="AGP 7.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Anjani Gram">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">ANJANI GRAM PRAYAGRAJ
+                                MAHAKUMBH 2025</h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">
+                                BRAND/STRATEGY/SALES</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 10: Swarovski -->
+                    <div class="min-w-[85vw] md:min-w-[40vw] h-[60vh] relative group snap-center hoverable"
+                        data-cursor="view" onclick="openProjectModal(this)">
+                        <img src="swar thumbnail.webp"
+                            class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
+                            alt="Swarovski">
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <h3 class="project-title text-3xl font-bold display-font text-white">SWAROVSKI X THE WEEKND
+                            </h3>
+                            <p class="project-category text-[#FF3131] uppercase text-sm tracking-wider mt-2">GRAPHICS
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Custom Slider Controls -->
+                <div class="w-full max-w-4xl h-4 bg-gray-200 dark:bg-gray-800 mt-12 rounded-full relative overflow-hidden hoverable cursor-pointer"
+                    id="custom-slider-track">
+                    <div class="absolute top-0 left-0 h-full w-1/4 bg-[#FF3131] cursor-grab active:cursor-grabbing hoverable"
+                        id="custom-slider-thumb"></div>
+                </div>
+            </section>
+
+            <!-- SECTION: ABOUT PREVIEW (Manifesto) -->
+            <section id="about-preview" class="py-32 px-6 md:px-12 relative border-b border-theme bg-theme-main">
+                <div class="max-w-7xl mx-auto z-10 relative">
+                    <p class="text-sm font-bold mb-8 text-[#FF3131] uppercase tracking-wider reveal-text">Where It All
+                        Began</p>
+                    <h5
+                        class="text-4xl md:text-8xl leading-[1.0] font-bold display-font mb-16 text-theme-main mix-blend-exclusion">
+                        <span class="scramble-text inline-block" data-value="We don’t chase trends."></span><br>
+                        <span class="scramble-text text-[#FF3131] inline-block" data-value="We build foundations.">We
+                            build foundations.</span>
+                    </h5>
+                    <div class="grid md:grid-cols-2 gap-16 text-lg md:text-xl leading-relaxed font-medium">
+                        <p class="reveal-paragraph opacity-0 translate-y-4 text-theme-main">Most brands don’t fail
+                            because they lack talent or ambition.
+                            They fail because their story is never truly understood. <br><br> We began as a small
+                            collective of designers, strategists, and thinkers who believed that great brands are built
+                            at the intersection of clarity, intention, and emotion.
+
+                        </p>
+                        <p class="reveal-paragraph opacity-0 translate-y-4 text-theme-main">
+                            What started as conversations and late-night explorations slowly became a way of working —
+                            one rooted in listening first, designing second, and building with purpose.<br><br>
+
+                            Today, PICKD exists to help brands grow with meaning, not noise.
+                            To create identities that feel considered, confident, and unmistakably their own.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: ENTER PLAYGROUND (Inserted Here) -->
+            <div class="bg-theme-secondary pt-24 pb-16 px-6 md:px-12 border-t border-theme text-center">
+                <p class="text-[#FF3131] uppercase tracking-widest text-xs mb-2 animate-pulse">System Ready</p>
+                <h2 class="text-4xl md:text-6xl font-bold display-font text-theme-main leading-[0.85] uppercase">
+                    ENTER THE <span class="text-[#FF3131]">PLAYGROUND</span>
+                </h2>
+            </div>
+
+            <!-- Game Container -->
+            <section id="playground" class="relative w-full h-[85vh] overflow-hidden hoverable border-b border-theme"
+                data-cursor="big">
+                <div id="ui-layer" style="top: 20px;">
+                    <div>Score: <span id="scoreEl">0</span></div>
+                    <div class="interactive">
+                        Speed: <span id="speedVal">1.0</span>x
+                        <br>
+                        <input type="range" id="speedSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+                    </div>
+                </div>
+                <div id="goal-display" style="top: 20px;">Score 2500 to get PICKD</div>
+
+                <!-- Win Screen Container -->
+                <div id="win-screen">
+                    <div class="neon-text">Congratulations<br>you have been PICKD</div>
+                    <button id="continue-btn" class="hoverable">Continue Game</button>
+                </div>
+
+                <canvas id="gameCanvas" class="block w-full h-full"></canvas>
+            </section>
+
+            <!-- SHARED CONTACT FOR HOME -->
+            <section id="contact-home"
+                class="min-h-[50vh] flex flex-col justify-center px-6 md:px-12 relative pt-20 bg-theme-main border-t border-theme">
+                <div class="w-full max-w-5xl mx-auto pb-20">
+                    <h2 class="text-[12vw] leading-none font-bold display-font text-center md:text-left text-theme-main hover:text-[#FF3131] transition-colors duration-500 cursor-pointer"
+                        onclick="navigateTo('contact')">
+                        LET'S TALK
+                    </h2>
+                    <div class="mt-20 grid md:grid-cols-2 gap-16">
+                        <div class="flex flex-col justify-between text-theme-muted">
+                            <div>
+                                <p class="text-theme-main text-xl mb-4">Contact Info</p>
+                                <p class="mb-2">
+                                    <a href="mailto:info@pickd.in"
+                                        class="hover:text-[#FF3131] transition-colors">info@pickd.in</a>
+                                </p>
+                                <p>
+                                    <a href="tel:+918871491373" class="hover:text-[#FF3131] transition-colors">+91
+                                        8871491373</a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-between text-theme-muted">
+                            <div>
+                                <p class="text-theme-main text-xl mb-4">Socials</p>
+                                <div class="flex flex-col gap-2">
+                                    <a href="https://www.instagram.com/pickd.in/" target="_blank"
+                                        class="hover:text-[#FF3131] hoverable">Instagram</a>
+                                    <a href="https://x.com/itspickd?s=11"
+                                        class="hover:text-[#FF3131] hoverable">Twitter</a>
+                                    <a href="https://www.linkedin.com/company/pickd-india/" target="_blank"
+                                        class="hover:text-[#FF3131] hoverable">LinkedIn</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="py-6 border-t border-theme flex justify-between text-xs text-theme-muted uppercase tracking-widest">
+                    <span>© 2024 PICKD. Agency</span>
+                    <span>Designed in the Void</span>
+                </div>
+            </section>
+        </div>
+
+    </div> <!-- End Main Container -->
+
+<!-- PROJECT MODAL SHEET -->
+    <div id="modal-backdrop" onclick="closeProjectModal()"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[90] opacity-0 pointer-events-none transition-opacity duration-500">
+    </div>
+
+    <div id="project-modal"
+        class="fixed inset-x-0 bottom-0 z-[100] h-[95vh] bg-theme-main transform translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] flex flex-col border-t border-[#FF3131] shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        <!-- Header / Controls -->
+        <div class="flex justify-between items-center p-6 md:p-8 border-b border-theme bg-theme-main z-10 sticky top-0">
+            <div>
+                <h2 id="modal-title" class="text-3xl md:text-5xl font-bold display-font text-theme-main uppercase">
+                    PROJECT NAME</h2>
+                <p id="modal-category" class="text-[#FF3131] text-xs uppercase tracking-widest mt-1">Category / Year</p>
+            </div>
+            <button onclick="closeProjectModal()"
+                class="text-theme-main hover:text-[#FF3131] text-4xl hoverable">&times;</button>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="overflow-y-auto flex-1 p-6 md:p-12 filter-scrollbar" id="modal-content">
+            <!-- 1. Video Frame (Top) -->
+            <div id="modal-video-container"
+                class="w-full aspect-video bg-black mb-12 relative overflow-hidden group border border-theme transition-all duration-300">
+                <!-- Abstract looping background video placeholder -->
+                <video id="modal-video" class="w-full h-full object-cover opacity-80" autoplay loop muted playsinline>
+                    <source src="https://videos.pexels.com/video-files/3163534/3163534-hd_1920_1080_30fps.mp4"
+                        type="video/mp4">
+                </video>
+                <!-- <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <h3 class="text-white text-xl uppercase tracking-[0.5em] mix-blend-overlay">System Preview</h3>
+                 </div> -->
+                <div class="absolute inset-0 flex items-end justify-end pointer-events-none p-6">
+                    <img src="pickdlogo_1.webp" alt="PICKD" class="w-24 opacity-50 mix-blend-overlay">
+                </div>
+            </div>
+
+            <!-- 2. Mockup Images (Grid) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-20" id="modal-gallery">
+                <!-- Images injected via JS -->
+            </div>
+
+            <!-- 3. Description (Bottom) -->
+            <div class="grid md:grid-cols-3 gap-12 mb-20 pt-12 border-t border-theme">
+                <div class="md:col-span-1">
+                    <h3 class="text-sm text-[#FF3131] uppercase tracking-widest mb-4">The Brief</h3>
+                    <p id="modal-desc-brief" class="text-theme-muted leading-relaxed">
+                        Reinvent the digital presence for a future-tech conglomerate. The goal was to dismantle
+                        traditional corporate aesthetics and replace them with a raw, brutalist interface that screams
+                        innovation.
+                    </p>
+                </div>
+                <div class="md:col-span-2">
+                    <h3 class="text-sm text-[#FF3131] uppercase tracking-widest mb-4">The Execution</h3>
+                    <p id="modal-desc-execution" class="text-theme-main text-lg md:text-xl leading-relaxed">
+                        We approached this project with a "mobile-first, motion-heavy" philosophy. Utilizing WebGL for
+                        fluid distortions and a custom physics engine for UI interactions, we created a site that feels
+                        alive. The visual language draws heavily from sci-fi telemetry and analog glitch art, resulting
+                        in a user experience that is both disorienting and captivating.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Next Project Nav -->
+            <div class="border-t border-theme mt-20 pt-12 flex justify-between items-center cursor-pointer hoverable group"
+                onclick="closeProjectModal()">
+                <span class="text-theme-muted uppercase tracking-widest text-sm">Next Case Study</span>
+                <span
+                    class="text-2xl md:text-5xl font-bold display-font text-theme-main group-hover:text-[#FF3131] transition-colors">NEXT
+                    PROJECT -></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
